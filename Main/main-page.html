@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <title>Informashit</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a href="#" class="logo">
+        <img src="Img/info logo.png" alt="" />
+      </a>
+
+      <div class="profile">
+        <img src="Img/empty profile.jpg" alt="display photo" />
+        <p id="user-full-name"></p>
+      </div>
+
+      <nav class="navbar">
+        <ul>
+          <li class="selected">
+            <i class="bx bxs-megaphone"></i>
+            <a href="#" class="nav-link">Reports</a>
+          </li>
+          <li class="selected">
+            <i class="bx bx-bus"></i>
+            <a href="#" class="nav-link">Units</a>
+          </li>
+          <li class="selected">
+            <i class="bx bxs-location-plus"></i>
+            <a href="#" class="nav-link">Routes</a>
+          </li>
+          <li class="selected">
+            <i class="bx bx-phone"></i>
+            <a href="#" class="nav-link" data-content="emergency-hotlines"
+              >Emergency Hotlines</a
+            >
+          </li>
+          <li class="selected">
+            <i class="bx bx-history"></i>
+            <a href="#" class="nav-link">History</a>
+          </li>
+          <li>
+            <i class="bx bx-log-out-circle"></i>
+            <a href="#" class="nav-link" id="logout-link">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="content">
+      <div class="home-container">
+        <div class="title-container">
+          <h2>Home Page</h2>
+        </div>
+        <div class="content-container"></div>
+      </div>
+
+      <div class="reports-container">
+        <div class="title-container">
+          <h2>Reports</h2>
+        </div>
+        <div class="content-container"></div>
+      </div>
+
+      <div class="units-container">
+        <div class="title-container">
+          <h2>Units</h2>
+        </div>
+        <div class="content-container">
+          <button id="unit-back-btn" onclick="backBtn()">
+            <i class="bx bx-arrow-back"></i>
+          </button>
+          <div class="selected-unit-container unit-8021">
+            <h1>unit 8021</h1>
+            <div class="map-container">
+              <img src="/routes/TaytayToQuiapo.jpg" alt="" />
+              <img src="/img/loc.png" alt="" class="loc first-stop" />
+              <img src="/img/loc.png" alt="" class="loc second-stop" />
+            </div>
+          </div>
+          <ul class="unit-number-container">
+            <li>
+              <h4>UNIT NO.</h4>
+              <p class="location">LOCATION</p>
+              <p class="speed">SPEED</p>
+            </li>
+            <li>
+              <a href="#" onclick="eightzerotwooneBtn()">8021</a>
+              <p class="location">QUIAPO</p>
+              <p class="speed">60km/h</p>
+            </li>
+            <li>
+              <a href="#">8022</a>
+              <p class="location">TALAPING</p>
+              <p class="speed">60km/h</p>
+            </li>
+            <li>
+              <a href="#">8023</a>
+              <p class="location">MARIKINA</p>
+              <p class="speed">60km/h</p>
+            </li>
+            <li>
+              <a href="#">8024</a>
+              <p class="location">MARIKINA</p>
+              <p class="speed">60km/h</p>
+            </li>
+            <li>
+              <a href="#">8025</a>
+              <p class="location">MARIKINA</p>
+              <p class="speed">60km/h</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="routes-container">
+        <div class="title-container">
+          <h2>Routes</h2>
+        </div>
+        <div class="content-container"></div>
+      </div>
+
+      <div class="emergency-hotlines-container">
+        <div class="title-container">
+          <h2>Emergency Hotlines</h2>
+        </div>
+        <div class="stations-container content-container">
+          <button class="resetBtn" onclick="resetClasses()">
+            <i class="bx bx-arrow-back"></i>
+          </button>
+
+          <div class="hospital-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/hospital.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Hospital Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="banner">
+                  <img src="Img/RPHD.png" alt="" />
+                  <div class="titles">
+                    <h1>EXEMPLARY HEALTHCARE EXCELLENCE</h1>
+                    <p>LEADING Hospital IN THE HEART OF PHILIPPINES</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Hospital Name</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Hospital Life Hospital</h2>
+                      <p>09458721798</p>
+                    </li>
+                    <li>
+                      <h2>Tricity Medical Center</h2>
+                      <p>0282759752</p>
+                    </li>
+                    <li>
+                      <h2>St. Luke's medical Center - Global City</h2>
+                      <p>0287897700</p>
+                    </li>
+                  </ul>
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Hospital Name</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Mary Chiles General Hospital</h2>
+                      <p>0287355352</p>
+                    </li>
+                    <li>
+                      <h2>Philippine General Hospital</h2>
+                      <p>02855484000</p>
+                    </li>
+                    <li>
+                      <h2>Manila Doctors Hospital</h2>
+                      <p>28558088</p>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+
+          <div class="police-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/police.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Police Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="police-banner">
+                  <img src="Img/PNP.png" alt="" />
+                  <div class="police-titles">
+                    <h1>REPUBLIC OF THE PHILIPPINES</h1>
+                    <p>PHILIPPINE NATIONAL POLICE</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Police Stations</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Hospital Life Hospital</h2>
+                      <p>09458721798</p>
+                    </li>
+                    <li>
+                      <h2>Tricity Medical Center</h2>
+                      <p>0282759752</p>
+                    </li>
+                    <li>
+                      <h2>St. Luke's medical Center - Global City</h2>
+                      <p>0287897700</p>
+                    </li>
+                  </ul>
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Police Stations</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Mary Chiles General Hospital</h2>
+                      <p>0287355352</p>
+                    </li>
+                    <li>
+                      <h2>Philippine General Hospital</h2>
+                      <p>02855484000</p>
+                    </li>
+                    <li>
+                      <h2>Manila Doctors Hospital</h2>
+                      <p>28558088</p>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+
+          <div class="fire-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/fire.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Fire Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="fire-banner">
+                  <img src="Img/BFP.png" alt="" />
+                  <div class="fire-titles">
+                    <h1>PROTECT AND SERVE</h1>
+                    <p>BUREAU OF FIRE PROTECTION</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Fire Stations</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Hospital Life Hospital</h2>
+                      <p>09458721798</p>
+                    </li>
+                    <li>
+                      <h2>Tricity Medical Center</h2>
+                      <p>0282759752</p>
+                    </li>
+                    <li>
+                      <h2>St. Luke's medical Center - Global City</h2>
+                      <p>0287897700</p>
+                    </li>
+                  </ul>
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Fire Stations</h2>
+                      <h3>Contact</h3>
+                    </li>
+                    <li>
+                      <h2>Mary Chiles General Hospital</h2>
+                      <p>0287355352</p>
+                    </li>
+                    <li>
+                      <h2>Philippine General Hospital</h2>
+                      <p>02855484000</p>
+                    </li>
+                    <li>
+                      <h2>Manila Doctors Hospital</h2>
+                      <p>28558088</p>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-container">
+        <div class="title-container">
+          <h2>History</h2>
+        </div>
+        <div class="content-container"></div>
+      </div>
+    </div>
+
+    <script type="module" src="script.js" defer></script>
+    <script src="active-station.js"></script>
+    <script src="active-tab.js"></script>
+  </body>
+</html>
