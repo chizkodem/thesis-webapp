@@ -218,6 +218,36 @@ p {
   background-color: #146ddb;
 }
 
+#cross-button {
+  display: none;
+  position: absolute;
+  top: 6%;
+  left: 22%;
+  width: 40px;
+  aspect-ratio: 1/1;
+  background-color: #146ddb;
+  background-image: url(/img/cross.png);
+  background-size: cover;
+  border-radius: 50%;
+  z-index: 999;
+  cursor: pointer;
+}
+
+#clear-button {
+  display: none;
+  position: absolute;
+  top: 6%;
+  left: 27%;
+  width: 40px;
+  aspect-ratio: 1/1;
+  background-color: #146ddb;
+  background-size: cover;
+  border-radius: 50%;
+  z-index: 999;
+  cursor: pointer;
+  color: white;
+}
+
 .unit-8021.reveal {
   display: block;
 }
@@ -509,4 +539,51 @@ p {
   100% {
     scale: 100%;
   }
+}
+
+.template {
+  position: absolute;
+  opacity: 0;
+  top: -34%;
+  left: -4%;
+  width: 97%;
+}
+
+#loc-cross {
+  position: absolute;
+  width: 60px;
+  z-index: 999;
+}
+
+.loc-cross {
+  display: none;
+  animation: popup 0.3s;
+}
+
+.loc-cross.reveal {
+  display: block;
+}
+
+.loc-cross.cross0 {
+  left: 27%;
+}
+
+.loc-cross.cross1 {
+  top: -14px;
+  left: 29.8%;
+}
+
+.loc-cross.cross2 {
+  top: 14%;
+  left: 28.6%;
+}
+
+.loc-cross.cross3 {
+  top: 14.6%;
+  left: 30%;
+}
+
+.loc-cross.cross4 {
+  top: 27%;
+  left: 29.5%;
 }

@@ -70,8 +70,11 @@ document
 
 // unit buttons
 const unitBackBtn = document.getElementById("unit-back-btn");
+const locCrossBtn = document.getElementById("cross-button");
+const locCrosses = document.getElementById("loc-cross");
 const unit8021Map = document.querySelector(".unit-8021");
 const unitNoContainer = document.querySelector(".unit-number-container");
+const clearBtn = document.getElementById("clear-button");
 const locLogos = document.querySelectorAll(".loc");
 
 locLogos.forEach((locLogo) => {
@@ -90,11 +93,30 @@ eightzerotwooneBtn = () => {
   unit8021Map.classList.add("reveal");
   unitNoContainer.classList.add("hide");
   unitBackBtn.style.display = "block";
+  locCrossBtn.style.display = "block";
 };
 
 backBtn = () => {
+  clearButton();
   unit8021Map.classList.remove("reveal");
   unitNoContainer.classList.remove("hide");
+  locCrossBtn.style.display = "none";
   unitBackBtn.style.display = "none";
   locLogos.classList.remove("loc-reveal");
 };
+
+clearButton = () => {
+  clearBtn.style.display = "none";
+  const crosses = document.querySelectorAll(".loc-cross");
+  crosses.forEach((cross) => {
+    cross.classList.remove("reveal");
+  });
+};
+
+document.getElementById("cross-button").addEventListener("click", function () {
+  const crosses = document.querySelectorAll(".loc-cross");
+  clearBtn.style.display = "block";
+  crosses.forEach((cross) => {
+    cross.classList.add("reveal");
+  });
+});
