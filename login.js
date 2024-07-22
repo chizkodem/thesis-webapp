@@ -57,7 +57,8 @@ document
       document.getElementById("loginPassword").value = "";
 
       // Redirect to main page after successful login
-      window.location.href = "main/main-page.html";
+      window.location.href =
+        "chizkodem.github.io/thesis-webapp/Main/main-page.html";
 
       // Perform any additional actions after successful login if needed
     } catch (error) {
