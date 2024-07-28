@@ -121,7 +121,13 @@ function initializeMap() {
 
   function updateSidebar(deviceId, lat, lon, timeAgo, formattedTimestamp) {
     const deviceList = document.getElementById("device-list");
+    const numCon = document.querySelector(".unit-number-container");
     let deviceInfo = document.getElementById(`device-${deviceId}`);
+    let listItem = document.getElementById(`unit-${deviceId}`);
+
+    // getting the last 4 character of the device ID
+    let deviceLastFourChar = deviceId.slice(-4);
+    console.log(deviceLastFourChar);
 
     if (!deviceInfo) {
       deviceInfo = document.createElement("div");
@@ -129,13 +135,22 @@ function initializeMap() {
       deviceInfo.id = `device-${deviceId}`;
       deviceList.appendChild(deviceInfo);
     }
-
     deviceInfo.innerHTML = `
-                    <h3>Device ID: ${deviceId}</h3>
-                    <p><b>Latitude:</b> ${lat}</p>
-                    <p><b>Longitude:</b> ${lon}</p>
-                    <p><b>Last Update:</b> ${timeAgo} (${formattedTimestamp})</p>
-                `;
+        <h3>Device ID: ${deviceLastFourChar}</h3>
+        <p><b>Latitude:</b> ${lat}</p>
+        <p><b>Longitude:</b> ${lon}</p>
+        <p><b>Last Update:</b> ${timeAgo} (${formattedTimestamp})</p>
+    `;
+
+    if (!listItem) {
+      listItem = document.createElement("li");
+      listItem.className = "device-info";
+      listItem.id = `unit-${deviceId}`;
+      numCon.appendChild(listItem);
+    }
+    listItem.innerHTML = `
+    <a href="#">${deviceLastFourChar}</a>
+    `;
   }
 }
 
