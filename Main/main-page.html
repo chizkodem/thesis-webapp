@@ -7,9 +7,13 @@
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
-    <title>Informashit</title>
+    <title>ADER</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
   </head>
   <body>
     <header>
@@ -74,6 +78,23 @@
           <h2>Units</h2>
         </div>
         <div class="content-container">
+          <div id="map-container">
+            <div id="map"></div>
+            <div id="sidebar">
+              <h2>Device Dashboard</h2>
+              <div id="device-list"></div>
+            </div>
+          </div>
+          <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+          <script type="module" src="leaflet.js"></script>
+        </div>
+      </div>
+
+      <div class="routes-container">
+        <div class="title-container">
+          <h2>Routes</h2>
+        </div>
+        <div class="content-container">
           <button id="unit-back-btn" onclick="backBtn()">
             <i class="bx bx-arrow-back"></i>
           </button>
@@ -81,7 +102,7 @@
           <button id="clear-button" onclick="clearButton()">clear</button>
           <div class="selected-unit-container unit-8021">
             <h1>unit 8021</h1>
-            <div class="map-container">
+            <div class="unit-map-container">
               <img
                 src="/img/loc-cross.png"
                 alt=""
@@ -158,13 +179,6 @@
             </li>
           </ul>
         </div>
-      </div>
-
-      <div class="routes-container">
-        <div class="title-container">
-          <h2>Routes</h2>
-        </div>
-        <div class="content-container"></div>
       </div>
 
       <div class="emergency-hotlines-container">

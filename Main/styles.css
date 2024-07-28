@@ -117,6 +117,55 @@ p {
   border-radius: 30px;
   box-shadow: 1px 5px 15px rgba(0, 0, 0, 0.5);
   padding: 10px;
+  /* overflow: hidden; */
+  /* position: relative; */
+}
+
+#map-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+#sidebar {
+  width: 30%;
+  background: #f9f9f9;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  border-radius: 20px;
+}
+
+#sidebar::-webkit-scrollbar {
+  display: none; /* For WebKit-based browsers */
+}
+
+.device-info {
+  margin-bottom: 10px;
+}
+.device-info h3 {
+  margin: 0;
+}
+.device-info p {
+  margin: 5px 0;
+  color: #020244;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.device-info {
+  margin-bottom: 10px;
+}
+.device-info h3 {
+  margin: 0;
+}
+.device-info p {
+  margin: 5px 0;
 }
 
 /* navbar */
@@ -170,7 +219,7 @@ p {
 }
 
 /* units css */
-.units-container .content-container {
+.routes-container .content-container {
   display: flex;
   justify-content: center;
   padding: 30px;
@@ -499,7 +548,7 @@ p {
   height: 180px;
 }
 
-.map-container {
+.unit-map-container {
   position: relative;
   width: max-content;
 }
