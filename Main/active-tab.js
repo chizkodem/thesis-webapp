@@ -1,35 +1,38 @@
-document.addEventListener('DOMContentLoaded', function() {
-    var navLinks = document.querySelectorAll('.nav-link');
-    var logoLink = document.querySelector('.logo');
-    var beforeElement = document.querySelector('.selected.active::before');
+document.addEventListener("DOMContentLoaded", function () {
+  var navLinks = document.querySelectorAll(".nav-link");
+  var logoLink = document.querySelector(".logo");
+  var beforeElement = document.querySelector(".selected.active::before");
 
-    navLinks.forEach(function(link, index) {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
+  navLinks.forEach(function (link, index) {
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
 
-            document.querySelectorAll('.navbar li').forEach(function(li) {
-                li.classList.remove('active');
-            });
+      document.querySelectorAll(".navbar li").forEach(function (li) {
+        li.classList.remove("active");
+      });
 
-            this.closest('li').classList.add('active');
+      this.closest("li").classList.add("active");
 
-            var topPosition = index * beforeElement.clientHeight;
-            document.documentElement.style.setProperty('--top-position', topPosition + 'px');
+      var topPosition = index * beforeElement.clientHeight;
+      document.documentElement.style.setProperty(
+        "--top-position",
+        topPosition + "px"
+      );
 
-            // Force a reflow to ensure the updated style is applied before the animation
-            void beforeElement.offsetWidth;
+      // Force a reflow to ensure the updated style is applied before the animation
+      void beforeElement.offsetWidth;
 
-            beforeElement.classList.add('animate-slide-in');
-        });
+      beforeElement.classList.add("animate-slide-in");
+    });
+  });
+
+  logoLink.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    document.querySelectorAll(".navbar li").forEach(function (li) {
+      li.classList.remove("active");
     });
 
-    logoLink.addEventListener('click', function(event) {
-        event.preventDefault();
-
-        document.querySelectorAll('.navbar li').forEach(function(li) {
-            li.classList.remove('active');
-        });
-
-        beforeElement.classList.remove('animate-slide-in');
-    });
+    beforeElement.classList.remove("animate-slide-in");
+  });
 });

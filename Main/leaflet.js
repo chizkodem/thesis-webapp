@@ -93,7 +93,7 @@ function initializeMap() {
       reportInfo.className = "report-info";
       reportInfo.id = `report-${notifID}`;
       reportInfo.innerHTML = `
-        <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank">${slicedNotifID}</a>
+        <a href="cctv/cctv.html" target="_blank">${slicedNotifID}</a>
         <p class="notif-button" onclick="clearNotif('${notifID}')">Button Pressed</p>
       `;
       reportsCon.appendChild(reportInfo);
@@ -126,12 +126,6 @@ function initializeMap() {
     } else if (message === "Admin notified" && historyInfo) {
       // Remove the list item if the message is "cleared"
       reportsCon.removeChild(historyInfo);
-
-      // Optionally, remove the "notified" class if there are no more notifications
-      // const remainingReports = reportsCon.querySelectorAll(".history-info");
-      // if (remainingReports.length === 0) {
-      //   notifTab.classList.remove("notified");
-      // }
     }
   }
 
@@ -148,6 +142,10 @@ function initializeMap() {
       .catch((error) => {
         console.error("Error updating notification message:", error);
       });
+  };
+
+  window.showRoute = function (notifID) {
+    const notifRef = ref(database, `locations/${notifID}`);
   };
 
   // Fetch notifications from Firebase
@@ -291,6 +289,12 @@ function initializeMap() {
     `;
   }
 }
+
+const cctv = () => {
+  const showCon = document.querySelector(".show");
+
+  showCon.classList.toggle("hide");
+};
 
 // Sign in and initialize the map
 signInWithEmailAndPassword(auth, email, password)

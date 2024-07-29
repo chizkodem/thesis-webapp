@@ -52,6 +52,7 @@ header {
   border-radius: 30px;
   margin-right: 20px;
   box-shadow: 5px 1px 15px rgba(0, 0, 0, 0.5);
+  overflow: auto;
 }
 
 .logo img {
@@ -117,15 +118,18 @@ p {
   border-radius: 30px;
   box-shadow: 1px 5px 15px rgba(0, 0, 0, 0.5);
   padding: 10px;
-  /* overflow: hidden; */
-  /* position: relative; */
 }
 
 .reports-list {
+  display: block;
   height: 100%;
   width: 100%;
   padding: 30px 200px;
   font-size: 2rem;
+}
+
+.reports-list.hide {
+  display: none;
 }
 
 .reports-list li {
@@ -177,7 +181,7 @@ p {
 }
 
 #map {
-  height: 100%;
+  /* height: 100%; */
   width: 100%;
   border-radius: 20px;
 }
@@ -230,10 +234,6 @@ p {
   z-index: 999;
   animation: slideIn 0.3s ease forwards;
   border-radius: 20px;
-}
-
-.rep {
-  /* background-color: red; */
 }
 
 .notif {
@@ -373,6 +373,7 @@ p {
   flex-wrap: wrap;
   position: relative;
   justify-content: space-around;
+  overflow: auto;
 }
 
 .flex-block,

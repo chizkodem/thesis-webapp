@@ -72,6 +72,9 @@
           <h2>Reports</h2>
         </div>
         <div class="content-container">
+          <div class="cctv-container"></div>
+          <button onclick="cctv()" style="width: 20px; height: 20px"></button>
+          <div class="show">asdasdasd</div>
           <ul class="reports-list">
             <li>
               <h4>UNIT NO.</h4>
@@ -93,8 +96,6 @@
               <div id="device-list"></div>
             </div>
           </div>
-          <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-          <script type="module" src="leaflet.js"></script>
         </div>
       </div>
 
@@ -115,12 +116,10 @@
             <li>
               <h4>UNIT NO.</h4>
               <p class="location">LOCATION</p>
-              <p class="speed">SPEED</p>
             </li>
             <li>
-              <a href="#" onclick="eightzerotwooneBtn()">8021</a>
+              <a>8021</a>
               <p class="location">QUIAPO</p>
-              <p class="speed">60km/h</p>
             </li>
           </ul>
         </div>
@@ -338,6 +337,8 @@
       </div>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type="module" src="leaflet.js" defer></script>
     <script type="module" src="script.js" defer></script>
     <script src="active-station.js"></script>
     <script src="active-tab.js"></script>
