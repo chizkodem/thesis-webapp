@@ -80,21 +80,61 @@ function initializeMap() {
     }
   );
 
+  // Fetch notifications from Firebase
+  onValue(
+    notifRef,
+    (snapshot) => {
+      console.log("Notification data received from Firebase");
+      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+
+      if (!snapshot.exists()) {
+        console.log("No data found in Firebase notifications.");
+        return;
+      }
+
+      // Handle each notification
+      snapshot.forEach((childSnapshot) => {
+        const notifId = childSnapshot.key;
+        const notifData = childSnapshot.val();
+        notifying(
+          notifId,
+          notifData.message,
+          notifData.latitude,
+          notifData.longitude
+        );
+        gettingHistory(notifId, notifData.message);
+      });
+    },
+    (error) => {
+      console.error("Error fetching notifications from Firebase:", error);
+    }
+  );
+
   // Listen for notifications from Firebase
-  function notifying(notifID, message) {
+  function notifying(notifID, message, lat, lon) {
     const reportsCon = document.querySelector(".reports-list");
     const notifTab = document.querySelector(".notif");
     let reportInfo = document.getElementById(`report-${notifID}`);
-    let slicedNotifID = notifID.slice(-4);
+    let slicedNotifID = notifID.slice(-4).toUpperCase();
 
-    if (message === "Admin notified" && !reportInfo) {
+    if (message === "Driver Pressed" && !reportInfo) {
       notifTab.classList.add("notified");
       reportInfo = document.createElement("li");
       reportInfo.className = "report-info";
       reportInfo.id = `report-${notifID}`;
       reportInfo.innerHTML = `
-        <a href="cctv/cctv.html" target="_blank">${slicedNotifID}</a>
-        <p class="notif-button" onclick="clearNotif('${notifID}')">Button Pressed</p>
+        <a href="#" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+        <p class="notif-button" onclick="clearNotif('${notifID}'), historyPrompt()">${message}</p>
+      `;
+      reportsCon.appendChild(reportInfo);
+    } else if (message === "Passenger Pressed" && !reportInfo) {
+      notifTab.classList.add("notified");
+      reportInfo = document.createElement("li");
+      reportInfo.className = "report-info";
+      reportInfo.id = `report-${notifID}`;
+      reportInfo.innerHTML = `
+        <a href="#" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+        <p class="notif-button" onclick="clearNotif('${notifID}'), historyPrompt()">${message}</p>
       `;
       reportsCon.appendChild(reportInfo);
     } else if (message === "Cleared" && reportInfo) {
@@ -109,10 +149,32 @@ function initializeMap() {
     }
   }
 
+  window.nearestHospital = function (deviceId, lat, lon) {
+    const radius = 5000; // Search radius in meters
+    const url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lon});out;`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract hospital names
+        const hospitalNames = data.elements
+          .filter((element) => element.tags.name)
+          .map((element) => element.tags.name);
+
+        // Log or use the hospital names
+        console.log("Nearby Hospitals:", hospitalNames);
+
+        // Optionally, you can update the UI or perform other actions with the names
+        // For example, display them in an HTML element
+        // document.getElementById("hospitalList").innerText = hospitalNames.join(", ");
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
   function gettingHistory(notifID, message) {
     const historyCon = document.querySelector(".history-list");
     let historyInfo = document.getElementById(`history-${notifID}`);
-    let slicedhistoryID = notifID.slice(-4);
+    let slicedhistoryID = notifID.slice(-4).toUpperCase();
 
     if (message === "Cleared" && !historyInfo) {
       historyInfo = document.createElement("li");
@@ -137,41 +199,17 @@ function initializeMap() {
     // Update the message field to "cleared"
     update(notifRef, {message: "Cleared"}) // Use update() with correct import
       .then(() => {
+        const promptTab = document.querySelector(".prompt");
+        promptTab.classList.add("prompted");
+        setTimeout(() => {
+          promptTab.classList.remove("prompted");
+        }, 1500);
         console.log("Notification message updated to 'cleared'");
       })
       .catch((error) => {
         console.error("Error updating notification message:", error);
       });
   };
-
-  window.showRoute = function (notifID) {
-    const notifRef = ref(database, `locations/${notifID}`);
-  };
-
-  // Fetch notifications from Firebase
-  onValue(
-    notifRef,
-    (snapshot) => {
-      console.log("Notification data received from Firebase");
-      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
-
-      if (!snapshot.exists()) {
-        console.log("No data found in Firebase notifications.");
-        return;
-      }
-
-      // Handle each notification
-      snapshot.forEach((childSnapshot) => {
-        const notifId = childSnapshot.key;
-        const notifData = childSnapshot.val();
-        notifying(notifId, notifData.message);
-        gettingHistory(notifId, notifData.message);
-      });
-    },
-    (error) => {
-      console.error("Error fetching notifications from Firebase:", error);
-    }
-  );
 
   function timeSince(timestamp) {
     const now = new Date();
@@ -260,8 +298,8 @@ function initializeMap() {
     let listItem = document.getElementById(`unit-${deviceId}`);
 
     // getting the last 4 characters of the device ID
-    let deviceLastFourChar = deviceId.slice(-4);
-    console.log(deviceLastFourChar);
+    let deviceLastFourChar = deviceId.slice(-4).toUpperCase();
+    // console.log(deviceLastFourChar);
 
     if (!deviceInfo) {
       deviceInfo = document.createElement("div");
@@ -289,12 +327,6 @@ function initializeMap() {
     `;
   }
 }
-
-const cctv = () => {
-  const showCon = document.querySelector(".show");
-
-  showCon.classList.toggle("hide");
-};
 
 // Sign in and initialize the map
 signInWithEmailAndPassword(auth, email, password)

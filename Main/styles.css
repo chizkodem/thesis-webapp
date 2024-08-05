@@ -254,8 +254,38 @@ p {
   animation: blink 2s infinite;
 }
 
+.prompt {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  height: 50px;
+  width: 0;
+  z-index: 999;
+  border-radius: 20px;
+}
+
+.prompt.prompted {
+  transition: all 0.5s;
+  left: 0;
+  width: 80%;
+  background-color: rgba(21, 255, 0, 0.8);
+  animation: prompt 1.5s ease;
+}
+
 .notif-button {
   cursor: pointer;
+}
+
+@keyframes prompt {
+  0% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes blink {
@@ -507,24 +537,30 @@ p {
 
 .contacts-list {
   width: 100%;
-  padding: 20px 0 20px 20px;
+  padding: 20px;
 }
 
 .contacts-list li:nth-child(1) {
   display: flex;
-  justify-content: space-between;
-  padding: 0 50px 0 0;
-  font-size: 0.8rem;
+  justify-content: space-around;
+  font-size: 1.2rem;
   margin-bottom: 15px;
 }
 
 .contacts-list li {
   display: flex;
-  justify-content: space-between;
-  text-justify: center;
+  justify-content: space-around;
+  text-align: end;
   font-size: 0.9rem;
   margin-bottom: 5px;
   /* background-color: red; */
+}
+
+.contacts-list li h3 {
+  /* background-color: red; */
+  max-width: 400px;
+  width: 100%;
+  display: flex;
 }
 
 .contacts-list li p {

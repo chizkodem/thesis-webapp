@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showContent("home-container");
   });
   // Show only the 'home-container' initially
-  showContent("reports-container");
+  showContent("emergency-hotlines-container");
 });
 
 function signOut() {
