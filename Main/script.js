@@ -49,6 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   // Show only the 'home-container' initially
   showContent("units-container");
+
+  setTimeout(() => {
+    showContent("home-container");
+  }, 2000);
 });
 
 function signOut() {

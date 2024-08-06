@@ -124,7 +124,7 @@ function initializeMap() {
       reportInfo.id = `report-${notifID}`;
       reportInfo.innerHTML = `
         <a href="#" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
-        <p class="notif-button" onclick="clearNotif('${notifID}'), historyPrompt()">${message}</p>
+        <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
       `;
       reportsCon.appendChild(reportInfo);
     } else if (message === "Passenger Pressed" && !reportInfo) {

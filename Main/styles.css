@@ -274,6 +274,8 @@ p {
 
 .notif-button {
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes prompt {
