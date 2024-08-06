@@ -107,7 +107,7 @@ function initializeMap() {
           notifData.message,
           notifData.latitude,
           notifData.longitude,
-          notifData.youtubestream
+          notifData.link
         );
         gettingHistory(notifId, notifData.message);
       });
