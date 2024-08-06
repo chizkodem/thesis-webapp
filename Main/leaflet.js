@@ -293,6 +293,11 @@ function initializeMap() {
       policeMarkers.forEach((marker) => {
         map.removeLayer(marker);
       });
+      policeMarkers = [];
+      fireStationMarkers.forEach((marker) => {
+        map.removeLayer(marker);
+      });
+      fireStationMarkers = [];
 
       console.log("test PINS REMOVED");
     }
@@ -308,8 +313,6 @@ function initializeMap() {
 
     var radius = 1000; // Fixed radius
     var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=police](around:${radius},${lat},${lon});out;`;
-    const policeContactsCon = document.querySelector(".police-contacts-list");
-    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
 
     fetch(url)
       .then((response) => response.json())
@@ -408,15 +411,6 @@ function initializeMap() {
     }
 
     searchMoreStations();
-  }
-
-  function clearPreviousStations() {
-    if (fireStationMarkers) {
-      fireStationMarkers.forEach((marker) => {
-        map.removeLayer(marker);
-      });
-      fireStationMarkers = [];
-    }
   }
 
   function clearPreviousFireStations() {
@@ -751,7 +745,7 @@ function initializeMap() {
     }
 
     listItem.innerHTML = `
-      <a href="#" onclick="routeBtn()" id="route-btn">${deviceLastFourChar}</a>
+      <a href="#" onclick="routeBtn(this)" id="route-btn">${deviceLastFourChar}</a>
       <p class="location">${streetName}</p>
       <p>${speed}km/h</p>
     `;
@@ -762,18 +756,28 @@ window.backButton = function () {
   const unitNoCon = document.querySelector(".unit-number-container");
   const backBtn = document.getElementById("unit-back-btn");
   const routeImgCon = document.querySelector(".route-img-container");
+  const routeImg = document.getElementById("route-img");
+  routeImg.src = "";
 
   routeImgCon.classList.add("hide");
   unitNoCon.classList.remove("hide");
   backBtn.style.display = "none";
 };
 
-window.routeBtn = function () {
+window.routeBtn = function (element) {
   const unitNoCon = document.querySelector(".unit-number-container");
   const routeBtn = document.getElementById("route-btn");
   const backBtn = document.getElementById("unit-back-btn");
   const routeImgCon = document.querySelector(".route-img-container");
-  const deviceID = routeBtn.textContent.trim();
+
+  const deviceID = element.textContent.trim();
+  console.log(deviceID);
+
+  const routeImg = document.getElementById("route-img");
+
+  const imgSrc = `routes/${deviceID}.png`;
+
+  routeImg.src = imgSrc;
 
   routeImgCon.classList.remove("hide");
   unitNoCon.classList.add("hide");

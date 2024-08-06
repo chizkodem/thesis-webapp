@@ -344,6 +344,11 @@ p {
   position: relative;
 }
 
+#route-img {
+  height: 100%;
+  width: 100%;
+}
+
 .unit-number-container {
   /* background-color: red; */
   width: 90%;
