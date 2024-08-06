@@ -55,8 +55,15 @@ header {
   overflow: auto;
 }
 
+.logo-container {
+  width: 80px;
+  height: 80px;
+  background-color: #468de4;
+  border-radius: 50%;
+}
+
 .logo img {
-  width: 50px;
+  width: 100%;
 }
 
 .profile {
@@ -133,17 +140,24 @@ p {
   display: block;
   height: 100%;
   width: 100%;
-  padding: 30px 200px;
+  padding: 20px;
   font-size: 2rem;
-}
-
-.reports-list.hide {
-  display: none;
 }
 
 .reports-list li {
   display: flex;
   justify-content: space-between;
+}
+
+.reports-list li:nth-child(1) p:nth-child(2) {
+  display: flex;
+  justify-content: space-between;
+  margin-right: 100px;
+}
+
+.report-info p:nth-child(2) {
+  font-size: 1.5rem;
+  text-align: center;
 }
 
 .history-list {
@@ -344,13 +358,10 @@ p {
   /* background-color: red; */
 }
 
-.unit-number-container li a {
-  margin-right: 100px;
-}
-
 .unit-number-container li .location {
-  position: absolute;
-  left: 45%;
+  /* position: absolute; */
+  /* background-color: red; */
+  text-align: start;
 }
 
 /* selected unit container */
@@ -368,6 +379,14 @@ p {
   left: 20px;
   border-radius: 50%;
   background-color: #146ddb;
+}
+
+.route-img-container.hide {
+  display: none;
+}
+
+.route-img-container {
+  display: block;
 }
 
 #cross-button {
@@ -546,19 +565,25 @@ p {
   width: 100%;
 }
 
-.contacts-list {
+.contacts-list,
+.police-contacts-list,
+.fire-contacts-list {
   width: 100%;
   padding: 20px;
 }
 
-.contacts-list li:nth-child(1) {
+.contacts-list li:nth-child(1),
+.police-contacts-list li:nth-child(1),
+.fire-contacts-list li:nth-child(1) {
   display: flex;
   justify-content: space-around;
   font-size: 1.2rem;
   margin-bottom: 15px;
 }
 
-.contacts-list li {
+.contacts-list li,
+.police-contacts-list li,
+.fire-contacts-list li {
   display: flex;
   justify-content: space-around;
   text-align: end;
@@ -567,14 +592,18 @@ p {
   /* background-color: red; */
 }
 
-.contacts-list li h3 {
+.contacts-list li h3,
+.police-contacts-list li h3,
+.fire-contacts-list li h3 {
   /* background-color: red; */
   max-width: 400px;
   width: 100%;
   display: flex;
 }
 
-.contacts-list li p {
+.contacts-list li p,
+.police-contacts-list li p,
+.fire-contacts-list li p {
   display: flex;
   align-items: center;
   /* background-color: red; */
@@ -745,4 +774,16 @@ p {
 .loc-cross.cross4 {
   top: 27%;
   left: 29.5%;
+}
+
+@media (max-width: 1200px) {
+  *:not(header) {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  * {
+    font-size: 1rem;
+  }
 }

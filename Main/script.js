@@ -51,8 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
   showContent("units-container");
 
   setTimeout(() => {
-    showContent("home-container");
-  }, 2000);
+    showContent("reports-container");
+  }, 1500);
 });
 
 function signOut() {
@@ -90,37 +90,5 @@ locLogos.forEach((locLogo) => {
 
     // Add 'loc-reveal' to the clicked image
     locLogo.classList.add("loc-reveal");
-  });
-});
-
-eightzerotwooneBtn = () => {
-  unit8021Map.classList.add("reveal");
-  unitNoContainer.classList.add("hide");
-  unitBackBtn.style.display = "block";
-  locCrossBtn.style.display = "block";
-};
-
-backBtn = () => {
-  clearButton();
-  unit8021Map.classList.remove("reveal");
-  unitNoContainer.classList.remove("hide");
-  locCrossBtn.style.display = "none";
-  unitBackBtn.style.display = "none";
-  locLogos.classList.remove("loc-reveal");
-};
-
-clearButton = () => {
-  clearBtn.style.display = "none";
-  const crosses = document.querySelectorAll(".loc-cross");
-  crosses.forEach((cross) => {
-    cross.classList.remove("reveal");
-  });
-};
-
-document.getElementById("cross-button").addEventListener("click", function () {
-  const crosses = document.querySelectorAll(".loc-cross");
-  clearBtn.style.display = "block";
-  crosses.forEach((cross) => {
-    cross.classList.add("reveal");
   });
 });
