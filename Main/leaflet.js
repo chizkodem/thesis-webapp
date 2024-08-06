@@ -123,7 +123,7 @@ function initializeMap() {
       reportInfo.className = "report-info";
       reportInfo.id = `report-${notifID}`;
       reportInfo.innerHTML = `
-        <a href="#" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+        <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
         <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
       `;
       reportsCon.appendChild(reportInfo);
@@ -133,7 +133,7 @@ function initializeMap() {
       reportInfo.className = "report-info";
       reportInfo.id = `report-${notifID}`;
       reportInfo.innerHTML = `
-        <a href="#" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+        <a href="https://www.youtube.com/watch?v=xvFZjo5PgG0" target="_blank" onclick="nearestHospital('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
         <p class="notif-button" onclick="clearNotif('${notifID}'), historyPrompt()">${message}</p>
       `;
       reportsCon.appendChild(reportInfo);
@@ -451,6 +451,7 @@ function initializeMap() {
     listItem.innerHTML = `
       <a href="#">${deviceLastFourChar}</a>
       <p class="location">${streetName}</p>
+      <p>0km/h</p>
     `;
   }
 }
