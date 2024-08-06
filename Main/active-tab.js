@@ -13,16 +13,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       this.closest("li").classList.add("active");
 
-      var topPosition = index * beforeElement.clientHeight;
-      document.documentElement.style.setProperty(
-        "--top-position",
-        topPosition + "px"
-      );
+      // var topPosition = index * beforeElement.clientHeight;
+      // document.documentElement.style.setProperty(
+      //   "--top-position",
+      //   topPosition + "px"
+      // );
 
       // Force a reflow to ensure the updated style is applied before the animation
-      void beforeElement.offsetWidth;
+      // void beforeElement.offsetWidth;
 
-      beforeElement.classList.add("animate-slide-in");
+      // beforeElement.classList.add("animate-slide-in");
     });
   });
 

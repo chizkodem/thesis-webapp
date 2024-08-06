@@ -149,27 +149,154 @@ function initializeMap() {
     }
   }
 
+  function clearPreviousHospitals() {
+    const contactsCon = document.querySelector(".contacts-list");
+    // Remove all contacts with the given deviceId
+    contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
+  }
+
   window.nearestHospital = function (deviceId, lat, lon) {
-    const radius = 5000; // Search radius in meters
-    const url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lon});out;`;
+    clearPreviousHospitals();
+
+    var radius = 5000; // Fixed radius
+    var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lon});out;`;
 
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        // Extract hospital names
-        const hospitalNames = data.elements
-          .filter((element) => element.tags.name)
-          .map((element) => element.tags.name);
+        console.log("API Response:", data); // Debugging line to see raw API response
 
-        // Log or use the hospital names
-        console.log("Nearby Hospitals:", hospitalNames);
+        const hospitals = data.elements.filter(
+          (element) => element.lat && element.lon
+        );
 
-        // Optionally, you can update the UI or perform other actions with the names
-        // For example, display them in an HTML element
-        // document.getElementById("hospitalList").innerText = hospitalNames.join(", ");
+        if (hospitals.length < 5) {
+          // If fewer than 5 hospitals, increase the search radius
+          increaseSearchRadius(deviceId, lat, lon, hospitals);
+        } else {
+          // Show hospitals with custom icon
+          hospitals.slice(0, 5).forEach((element) => {
+            console.log(element.tags.name, "test ASLKD");
+
+            L.marker([element.lat, element.lon], {
+              icon: L.icon({
+                iconUrl: "img/hospital.png", // Replace with your custom hospital icon URL
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32],
+              }),
+            })
+              .addTo(map)
+              .bindPopup(element.tags.name || "Hospital");
+          });
+        }
       })
       .catch((error) => console.error("Error:", error));
   };
+
+  function increaseSearchRadius(deviceId, lat, lng, currentHospitals) {
+    var radius = 5000; // Initial radius
+    var increment = 2000; // Radius increment
+    const contactsCon = document.querySelector(".contacts-list");
+    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+
+    function searchMoreHospitals() {
+      radius += increment;
+      var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lng});out;`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Expanded API Response:", data); // Debugging line to see expanded API response
+
+          const newHospitals = data.elements.filter(
+            (element) => element.lat && element.lon
+          );
+          const allHospitals = [...currentHospitals, ...newHospitals];
+
+          if (allHospitals.length < 5) {
+            searchMoreHospitals();
+          } else {
+            allHospitals.slice(0, 5).forEach((element) => {
+              // console.log(contactNumber(), "test numberalsdkjaslkdj");
+
+              if (!element.tags.name) {
+                console.log("walang pangalan");
+              } else if (element.tags.name) {
+                contactsInfo = document.createElement("li");
+                contactsInfo.className = "contacts-info";
+                contactsInfo.id = `contacts-${deviceId}`;
+                contactsInfo.innerHTML = `
+                <h3 href="#">${element.tags.name}</h3>
+                <p>${contactNumber()}</p>
+                `;
+                contactsCon.appendChild(contactsInfo);
+              }
+
+              L.marker([element.lat, element.lon], {
+                icon: L.icon({
+                  iconUrl: "img/hospital.png",
+                  iconSize: [32, 32],
+                  iconAnchor: [16, 32],
+                  popupAnchor: [0, -32],
+                }),
+              })
+                .addTo(map)
+                .bindPopup(element.tags.name || "Hospital");
+            });
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+
+    searchMoreHospitals();
+  }
+
+  function contactNumber() {
+    let temporaryNumber = [
+      "0912 345 6781",
+      "0918 234 5679",
+      "0922 345 6783",
+      "0923 456 7894",
+      "0924 567 8902",
+      "0925 678 9015",
+      "0926 789 0127",
+      "0927 890 1238",
+      "0928 901 2346",
+      "0929 012 3457",
+      "02 234 5678",
+      "02 345 6789",
+      "02 456 7891",
+      "02 567 8902",
+      "02 678 9013",
+      "02 234 5678",
+      "02 345 6781",
+      "02 456 7892",
+      "02 567 8903",
+      "02 678 9014",
+    ];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    let shuffledNumbers = shuffle([...temporaryNumber]); // Shuffle a copy of the array
+    let index = 0;
+
+    contactNumber();
+
+    function contactNumber() {
+      if (index >= shuffledNumbers.length) {
+        shuffledNumbers = shuffle([...temporaryNumber]); // Shuffle again when all numbers are used
+        index = 0;
+      }
+    }
+    return shuffledNumbers[index++];
+  }
 
   function gettingHistory(notifID, message) {
     const historyCon = document.querySelector(".history-list");
