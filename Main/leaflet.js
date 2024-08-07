@@ -46,6 +46,7 @@ function initializeMap() {
   // Get a reference to the Firebase Realtime Database
   const locationsRef = ref(database, "locations");
   const notifRef = ref(database, "notifications");
+  const youtubeRef = ref(database, "stream");
 
   // Listen for location updates from devices
   onValue(
@@ -116,6 +117,35 @@ function initializeMap() {
       console.error("Error fetching notifications from Firebase:", error);
     }
   );
+  let youtubeLink;
+  onValue(
+    youtubeRef,
+    (snapshot) => {
+      console.log("Notification data received from Firebase");
+      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+
+      if (!snapshot.exists()) {
+        console.log("No data found in Firebase notifications.");
+        return;
+      }
+
+      // Handle each notification
+      snapshot.forEach((childSnapshot) => {
+        const notifId = childSnapshot.key;
+        const notifData = childSnapshot.val();
+
+        console.log(notifData.link);
+
+        youtubeLink = notifData.link;
+
+        console.log(youtubeLink, "laskdjlaksdj test");
+      });
+    },
+    (error) => {
+      console.error("Error fetching notifications from Firebase:", error);
+    }
+  );
+
   // Listen for notifications from Firebase
   function notifying(notifID, message, lat, lon, link) {
     const reportsCon = document.querySelector(".reports-list");
@@ -129,7 +159,6 @@ function initializeMap() {
     gettingHistory(notifID, message);
 
     reverseGeocode(lat, lon, (error, streetName) => {
-      console.log(streetName, "test");
       if (message === "Driver Pressed" && !reportInfo) {
         gettingHistory(notifID, message);
         console.log("test tanggal history driver pressed");
@@ -138,7 +167,7 @@ function initializeMap() {
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
-          <a href="${link}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+          <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
           <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
         `;
@@ -151,7 +180,7 @@ function initializeMap() {
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
-          <a href="${link}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+          <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
           <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
         `;
