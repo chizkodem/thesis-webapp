@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
   showContent("units-container");
 
   setTimeout(() => {
-    showContent("routes-container");
+    showContent("home-container");
   }, 1500);
 });
 

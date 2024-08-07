@@ -14,6 +14,12 @@ html,
 body {
   height: 100%;
   margin: 0;
+  overflow: auto;
+}
+
+body::-webkit-scrollbar {
+  width: 0;
+  opacity: 0;
 }
 
 body::before {
@@ -785,10 +791,53 @@ p {
   *:not(header) {
     font-size: 1rem;
   }
+
+  .report-info p:nth-child(2) {
+    font-size: 1rem;
+    text-align: center;
+  }
 }
 
 @media (max-width: 1000px) {
-  * {
-    font-size: 1rem;
+  *:not(header) {
+    font-size: 0.8rem;
   }
+}
+
+.home-container {
+  padding: 20px;
+  color: white;
+}
+
+.home-container .content-container {
+  overflow: auto;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+}
+
+.home-container .content-container::-webkit-scrollbar {
+  width: 0;
+  background-color: transparent;
+}
+
+.title-container h1 {
+  text-align: center;
+}
+.section {
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 20px;
+  background-color: #146ddb;
+  max-width: 700px;
+  width: 100%;
+  padding: 10px;
+}
+.section h2 {
+}
+.section p,
+.section ul {
+  margin: 0 0 10px 0;
 }
