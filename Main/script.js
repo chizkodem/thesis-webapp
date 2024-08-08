@@ -50,9 +50,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Show only the 'home-container' initially
   showContent("units-container");
 
-  setTimeout(() => {
-    showContent("units-container");
-  }, 1500);
+  // setTimeout(() => {
+  //   showContent("units-container");
+  // }, 1500);
 });
 
 function signOut() {

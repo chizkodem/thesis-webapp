@@ -40,10 +40,6 @@
             <a href="#" class="nav-link">Units</a>
           </li>
           <li class="selected">
-            <i class="bx bxs-location-plus"></i>
-            <a href="#" class="nav-link">Routes</a>
-          </li>
-          <li class="selected">
             <i class="bx bx-phone"></i>
             <a href="#" class="nav-link" data-content="emergency-hotlines"
               >Emergency Hotlines</a
@@ -161,6 +157,20 @@
               <p>LOCATION</p>
               <p>Notification</p>
             </li>
+            <!-- <li>
+              <a href="#">1FB9</a>
+              <p>Exequiel</p>
+              <div class="notification-container">
+                <p class="notif-button">Driver Pressed
+                  <div class="buttons-container">
+                    <input type="text" class="reports-text">
+                    <button class="verified-button"></button>
+                    <button class="false-alarm" onclick="falseAlarm()"></button>
+                    <button class="back-button"></button>
+                    <button class="send-button"></button>
+                  </div></p>
+              </div>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -177,27 +187,6 @@
               <div id="device-list"></div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="routes-container">
-        <div class="title-container">
-          <h2>Routes</h2>
-        </div>
-        <div class="content-container">
-          <button id="unit-back-btn" onclick="backButton()">
-            <i class="bx bx-arrow-back"></i>
-          </button>
-          <div class="route-img-container hide">
-            <img src="" alt="" id="route-img" />
-          </div>
-          <ul class="unit-number-container">
-            <li>
-              <h4>UNIT NO.</h4>
-              <p class="location">LOCATION</p>
-              <p>SPEED</p>
-            </li>
-          </ul>
         </div>
       </div>
 
@@ -325,7 +314,7 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script type="module" src="leaflet.js" defer></script>
-    <script type="module" src="script.js" defer></script>
+    <script type="module" src="script.js"></script>
     <script src="active-station.js"></script>
     <script src="active-tab.js"></script>
   </body>

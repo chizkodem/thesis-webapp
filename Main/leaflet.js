@@ -147,7 +147,7 @@ function initializeMap() {
   );
 
   // Listen for notifications from Firebase
-  function notifying(notifID, message, lat, lon, link) {
+  function notifying(notifID, message, lat, lon) {
     const reportsCon = document.querySelector(".reports-list");
     const notifTab = document.querySelector(".notif");
     let reportInfo = document.getElementById(`report-${notifID}`);
@@ -161,7 +161,6 @@ function initializeMap() {
     reverseGeocode(lat, lon, (error, streetName) => {
       if (message === "Driver Pressed" && !reportInfo) {
         gettingHistory(notifID, message);
-        console.log("test tanggal history driver pressed");
         notifTab.classList.add("notified");
         reportInfo = document.createElement("li");
         reportInfo.className = "report-info";
@@ -169,10 +168,21 @@ function initializeMap() {
         reportInfo.innerHTML = `
           <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
-          <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
+          <div class="notification-container">
+            <p class="notif-button">${message}
+              <div class="buttons-container">
+                <input type="text" class="reports-text">
+                <button class="verified-button"></button>
+                <button class="false-alarm" onclick="falseAlarm('${notifID}')"></button>
+                <button class="back-button"></button>
+                <button class="send-button"></button>
+              </div></p>
+          </div>
         `;
         reportsCon.appendChild(reportInfo);
-        historyCon.removeChild(historyInfo);
+        if (historyInfo && historyCon.contains(historyInfo)) {
+          historyCon.removeChild(historyInfo);
+        }
       } else if (message === "Passenger Pressed" && !reportInfo) {
         gettingHistory(notifID, message);
         notifTab.classList.add("notified");
@@ -182,17 +192,27 @@ function initializeMap() {
         reportInfo.innerHTML = `
           <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
-          <p class="notif-button" onclick="clearNotif('${notifID}')">${message}</p>
+          <div class="notification-container">
+            <p class="notif-button">${message}
+              <div class="buttons-container">
+                <input type="text" class="reports-text">
+                <button class="verified-button"></button>
+                <button class="false-alarm" onclick="falseAlarm('${notifID}')"></button>
+              </div></p>
+          </div>
         `;
         reportsCon.appendChild(reportInfo);
-        historyCon.removeChild(historyInfo);
-      } else if (message === "Cleared" && reportInfo) {
-        // Remove the list item if the message is "cleared"
+        if (historyInfo && historyCon.contains(historyInfo)) {
+          historyCon.removeChild(historyInfo);
+        }
+      } else if (
+        message !== "Driver Pressed" &&
+        message !== "Passenger Pressed"
+      ) {
         gettingHistory(notifID, message);
-
-        reportsCon.removeChild(reportInfo);
-
-        // Optionally, remove the "notified" class if there are no more notifications
+        if (reportInfo && reportsCon.contains(reportInfo)) {
+          reportsCon.removeChild(reportInfo);
+        }
         const remainingReports = reportsCon.querySelectorAll(".report-info");
         if (remainingReports.length === 0) {
           notifTab.classList.remove("notified");
@@ -630,7 +650,7 @@ function initializeMap() {
     let historyInfo = document.getElementById(`history-${notifID}`);
     let slicedhistoryID = notifID.slice(-4).toUpperCase();
 
-    if (message === "Cleared" && !historyInfo) {
+    if (!historyInfo) {
       historyInfo = document.createElement("li");
       historyInfo.className = "history-info";
       historyInfo.id = `history-${notifID}`;
@@ -648,8 +668,107 @@ function initializeMap() {
     }
   }
 
+  window.falseAlarm = function (notifID) {
+    clearPreviousStations();
+    clearPreviousFireStations();
+    clearPreviousHospitals();
+    clearPins();
+    const notifRef = ref(database, `notifications/${notifID}`);
+
+    // Update the message field to "cleared"
+    update(notifRef, {message: "False Alarm"}) // Use update() with correct import
+      .then(() => {
+        const promptTab = document.querySelector(".prompt");
+        promptTab.classList.add("prompted");
+        setTimeout(() => {
+          promptTab.classList.remove("prompted");
+        }, 1500);
+        console.log("Notification message updated to 'cleared'");
+      })
+      .catch((error) => {
+        console.error("Error updating notification message:", error);
+      });
+  };
+
+  document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("notif-button")) {
+      const notifButton = event.target;
+      const notifContainer = notifButton
+        .closest("li")
+        .querySelector(".notification-container");
+      notifContainer.classList.toggle("reveal");
+    }
+  });
+
+  document.addEventListener("click", function (event) {
+    // Handle verified-button click
+    if (event.target.classList.contains("verified-button")) {
+      const notifContainer = event.target.closest(".notification-container");
+
+      const reportText = notifContainer.querySelector(".reports-text");
+      const falseAlarmButton = notifContainer.querySelector(".false-alarm");
+      const verifiedButton = notifContainer.querySelector(".verified-button");
+      const backButton = notifContainer.querySelector(".back-button");
+      const sendButton = notifContainer.querySelector(".send-button");
+
+      // Toggle visibility and styles
+      reportText.classList.add("reveal");
+      verifiedButton.style.display = "none";
+      falseAlarmButton.style.display = "none";
+      backButton.style.display = "block";
+
+      backButton.classList.add("animate-glide");
+
+      // Remove the animation class after the animation completes
+      backButton.addEventListener("animationend", () => {
+        backButton.classList.remove("animate-glide");
+      });
+
+      // Ensure only one event listener is added to the backButton
+      backButton.removeEventListener("click", handleBackButtonClick);
+      backButton.addEventListener("click", handleBackButtonClick);
+
+      // Handle back-button click
+      function handleBackButtonClick() {
+        reportText.classList.remove("reveal");
+        verifiedButton.style.display = "block";
+        falseAlarmButton.style.display = "block";
+        backButton.style.display = "none";
+      }
+
+      // Handle input in the reportText field
+      reportText.addEventListener("input", function () {
+        if (reportText.value.trim() !== "") {
+          sendButton.style.display = "block";
+          backButton.style.display = "none";
+        } else {
+          sendButton.style.display = "none";
+          backButton.style.display = "block";
+        }
+      });
+    }
+  });
+
+  document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("send-button")) {
+      const notifContainer = event.target.closest(".notification-container");
+      const reportText = notifContainer.querySelector(".reports-text");
+
+      // Find the parent <li> element to get the notifID
+      const reportInfo = notifContainer.closest(".report-info");
+      const notifID = reportInfo.id.replace("report-", ""); // Extract notifID
+
+      // Get the value from the input field
+      const textInput = reportText.value.trim();
+
+      console.log(notifID, textInput);
+      // Call the clearNotif function with notifID and textInput
+      clearNotif(notifID, textInput);
+    }
+  });
+
   // Function to clear notification
-  window.clearNotif = function (notifID) {
+  window.clearNotif = function (notifID, textInput) {
     // Reference to your Firebase database path for notifications
     clearPreviousStations();
     clearPreviousFireStations();
@@ -658,7 +777,7 @@ function initializeMap() {
     const notifRef = ref(database, `notifications/${notifID}`);
 
     // Update the message field to "cleared"
-    update(notifRef, {message: "Cleared"}) // Use update() with correct import
+    update(notifRef, {message: textInput})
       .then(() => {
         const promptTab = document.querySelector(".prompt");
         promptTab.classList.add("prompted");
@@ -764,19 +883,6 @@ function initializeMap() {
       <h3>Device ID: ${deviceLastFourChar}</h3>
       <p><b>Street:</b> ${streetName}</p>
       <p><b>Last Update:</b> ${timeAgo} (${formattedTimestamp})</p>
-    `;
-
-    if (!listItem) {
-      listItem = document.createElement("li");
-      listItem.className = "location-info";
-      listItem.id = `unit-${deviceId}`;
-      numCon.appendChild(listItem);
-    }
-
-    listItem.innerHTML = `
-      <a href="#" onclick="routeBtn(this)" id="route-btn">${deviceLastFourChar}</a>
-      <p class="location">${streetName}</p>
-      <p>${speed}km/h</p>
     `;
   }
 }

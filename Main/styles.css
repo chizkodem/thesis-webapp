@@ -301,10 +301,133 @@ p {
   animation: prompt 1.5s ease;
 }
 
+.notification-container {
+  width: fit-content;
+  position: relative;
+  height: 48px;
+  transition: 0.3s ease;
+  overflow: hidden;
+}
+
+.notification-container.reveal {
+  height: 100px;
+}
+
 .notif-button {
   cursor: pointer;
-  position: relative;
-  z-index: 1;
+}
+
+.buttons-container {
+  position: absolute;
+  bottom: -200%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  transition: 0.3s ease;
+  /* background-color: red; */
+}
+
+.notification-container.reveal .buttons-container {
+  bottom: 0%;
+}
+
+.reports-text {
+  width: 0; /* Initial width */
+  display: block;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  background-color: #468de4;
+  padding-left: 0;
+  color: white;
+  font-size: 1rem;
+  opacity: 1;
+  transition: width 0.3s ease; /* Specify width for transition */
+}
+
+.reports-text.reveal {
+  display: block; /* Make sure this is set to block for transition to work */
+  width: 160px; /* Target width for transition */
+  padding-left: 10px;
+  opacity: 1;
+}
+
+.verified-button {
+  background-image: url(Img/textSelect.png);
+  width: 50px;
+  height: 50px;
+  background-size: 30px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #00580f;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.false-alarm {
+  background-image: url(Img/falsealarm.png);
+  width: 50px;
+  height: 50px;
+  background-size: 35px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #960000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.back-button {
+  display: none;
+  background-image: url(Img/backbutton.png);
+  width: 50px;
+  height: 50px;
+  background-size: 35px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #960000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.back-button.reveal {
+  display: block;
+  background-image: url(Img/backbutton.png);
+  width: 50px;
+  height: 50px;
+  background-size: 35px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #960000;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.animate-glide {
+  animation: glide 0.3s ease;
+}
+
+@keyframes glide {
+  0% {
+    margin-right: 50px;
+  }
+  100% {
+    margin-right: 0;
+  }
+}
+
+.send-button {
+  display: none;
+  background-image: url(Img/check.png);
+  width: 50px;
+  height: 50px;
+  background-size: 35px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #00580f;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 @keyframes prompt {
@@ -834,8 +957,6 @@ p {
   max-width: 700px;
   width: 100%;
   padding: 10px;
-}
-.section h2 {
 }
 .section p,
 .section ul {
