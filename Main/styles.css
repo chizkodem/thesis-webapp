@@ -155,7 +155,7 @@ p {
   justify-content: space-between;
 }
 
-.reports-list li:nth-child(1) p:nth-child(2) {
+.reports-list li:nth-child(1) p:nth-child(3) {
   display: flex;
   justify-content: space-between;
   margin-right: 100px;
@@ -169,7 +169,7 @@ p {
 .history-list {
   height: 100%;
   width: 100%;
-  padding: 30px 200px;
+  padding: 30px;
   font-size: 2rem;
 }
 

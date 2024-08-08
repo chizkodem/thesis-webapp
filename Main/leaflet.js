@@ -48,7 +48,12 @@ function initializeMap() {
   const notifRef = ref(database, "notifications");
   const youtubeRef = ref(database, "stream");
 
+  console.log(notifRef);
+
   // Listen for location updates from devices
+
+  let deviceSpeeds = {};
+
   onValue(
     locationsRef,
     (snapshot) => {
@@ -68,6 +73,8 @@ function initializeMap() {
           `Device ID: ${deviceId}, Latitude: ${data.latitude}, Longitude: ${data.longitude}, Timestamp: ${data.timestamp}, Speed: ${data.speed}`
         );
         if (data.latitude && data.longitude && data.timestamp) {
+          deviceSpeeds[deviceId] = data.speed;
+
           updateMarker(
             deviceId,
             data.latitude,
@@ -99,24 +106,38 @@ function initializeMap() {
         return;
       }
 
+      // reportsCon.innerHTML = "";
+
       // Handle each notification
       snapshot.forEach((childSnapshot) => {
         const notifId = childSnapshot.key;
         const notifData = childSnapshot.val();
+
+        const speed = deviceSpeeds[notifId];
+
+        console.log(speed, notifId, "test speed");
+
         notifying(
           notifId,
           notifData.message,
           notifData.latitude,
           notifData.longitude,
-          notifData.link
+          speed
         );
-        gettingHistory(notifId, notifData.message);
+        gettingHistory(
+          notifId,
+          notifData.message,
+          notifData.latitude,
+          notifData.longitude,
+          notifData.timestamp
+        );
       });
     },
     (error) => {
       console.error("Error fetching notifications from Firebase:", error);
     }
   );
+
   let youtubeLink;
   onValue(
     youtubeRef,
@@ -147,70 +168,42 @@ function initializeMap() {
   );
 
   // Listen for notifications from Firebase
-  function notifying(notifID, message, lat, lon) {
+  function notifying(notifID, message, lat, lon, speed) {
     const reportsCon = document.querySelector(".reports-list");
     const notifTab = document.querySelector(".notif");
     let reportInfo = document.getElementById(`report-${notifID}`);
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
-    const historyCon = document.querySelector(".history-list");
-    let historyInfo = document.getElementById(`history-${notifID}`);
-
-    gettingHistory(notifID, message);
-
     reverseGeocode(lat, lon, (error, streetName) => {
-      if (message === "Driver Pressed" && !reportInfo) {
-        gettingHistory(notifID, message);
+      if (message === "Driver Pressed" || message === "Passenger Pressed") {
         notifTab.classList.add("notified");
+
+        // If reportInfo already exists, remove it before creating a new one
+        if (reportInfo && reportsCon.contains(reportInfo)) {
+          reportsCon.removeChild(reportInfo);
+        }
+
         reportInfo = document.createElement("li");
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
           <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
+          <p>${speed} km/h</p>
           <div class="notification-container">
             <p class="notif-button">${message}
               <div class="buttons-container">
                 <input type="text" class="reports-text">
                 <button class="verified-button"></button>
-                <button class="false-alarm" onclick="falseAlarm('${notifID}')"></button>
+                <button class="false-alarm"></button>
                 <button class="back-button"></button>
                 <button class="send-button"></button>
               </div></p>
           </div>
         `;
         reportsCon.appendChild(reportInfo);
-        if (historyInfo && historyCon.contains(historyInfo)) {
-          historyCon.removeChild(historyInfo);
-        }
-      } else if (message === "Passenger Pressed" && !reportInfo) {
-        gettingHistory(notifID, message);
-        notifTab.classList.add("notified");
-        reportInfo = document.createElement("li");
-        reportInfo.className = "report-info";
-        reportInfo.id = `report-${notifID}`;
-        reportInfo.innerHTML = `
-          <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
-          <p>${streetName}</p>
-          <div class="notification-container">
-            <p class="notif-button">${message}
-              <div class="buttons-container">
-                <input type="text" class="reports-text">
-                <button class="verified-button"></button>
-                <button class="false-alarm" onclick="falseAlarm('${notifID}')"></button>
-              </div></p>
-          </div>
-        `;
-        reportsCon.appendChild(reportInfo);
-        if (historyInfo && historyCon.contains(historyInfo)) {
-          historyCon.removeChild(historyInfo);
-        }
-      } else if (
-        message !== "Driver Pressed" &&
-        message !== "Passenger Pressed"
-      ) {
-        gettingHistory(notifID, message);
-        if (reportInfo && reportsCon.contains(reportInfo)) {
+      } else {
+        if (reportInfo) {
           reportsCon.removeChild(reportInfo);
         }
         const remainingReports = reportsCon.querySelectorAll(".report-info");
@@ -360,7 +353,7 @@ function initializeMap() {
   window.nearestStation = function (deviceId, lat, lon) {
     clearPreviousStations(); // Ensure you have a function to clear previous police stations
 
-    var radius = 1000; // Fixed radius
+    var radius = 5000; // Fixed radius
     var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=police](around:${radius},${lat},${lon});out;`;
 
     fetch(url)
@@ -400,7 +393,7 @@ function initializeMap() {
   };
 
   function policeIncreaseSearchRadius(deviceId, lat, lng, currentStations) {
-    var radius = 1000; // Initial radius
+    var radius = 5000; // Initial radius
     var increment = 1000; // Radius increment
     const policeContactsCon = document.querySelector(".police-contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
@@ -470,7 +463,7 @@ function initializeMap() {
   window.nearestFireStation = function (deviceId, lat, lon) {
     clearPreviousFireStations();
 
-    var radius = 1000; // Fixed radius
+    var radius = 5000; // Fixed radius
     var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=fire_station](around:${radius},${lat},${lon});out;`;
 
     fetch(url)
@@ -541,7 +534,7 @@ function initializeMap() {
   }
 
   function fireIncreaseSearchRadius(deviceId, lat, lng, currentStations) {
-    var radius = 1000; // Initial radius
+    var radius = 5000; // Initial radius
     var increment = 1000; // Radius increment
     const contactsCon = document.querySelector(".fire-contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
@@ -645,27 +638,51 @@ function initializeMap() {
     return shuffledNumbers[index++];
   }
 
-  function gettingHistory(notifID, message) {
+  function gettingHistory(notifID, message, lat, lon, time) {
     const historyCon = document.querySelector(".history-list");
     let historyInfo = document.getElementById(`history-${notifID}`);
     let slicedhistoryID = notifID.slice(-4).toUpperCase();
+    const date = new Date(time);
+    const formattedTimestamp = date.toLocaleString();
 
-    if (!historyInfo) {
-      historyInfo = document.createElement("li");
-      historyInfo.className = "history-info";
-      historyInfo.id = `history-${notifID}`;
-      historyInfo.innerHTML = `
-        <a href="#">${slicedhistoryID}</a>
-        <p>${message}</p>
-      `;
-      historyCon.appendChild(historyInfo);
-    } else if (
-      message === "Driver Pressed" &&
-      message === "Passenger Pressed" &&
-      historyInfo
-    ) {
-      historyCon.removeChild(historyInfo);
-    }
+    console.log(lat, lon, time, "test ALKSJDLAKSJD");
+
+    reverseGeocode(lat, lon, (error, streetName) => {
+      if (error) {
+        console.error("Error reverse geocoding:", error);
+        streetName = `Lat: ${lat}, Lon: ${lon}`;
+      }
+      // Always attempt to remove historyInfo if the message matches
+      if (message === "Driver Pressed" || message === "Passenger Pressed") {
+        if (historyInfo) {
+          historyCon.removeChild(historyInfo);
+        }
+      } else if (message !== "Driver Pressed" && !historyInfo) {
+        console.log(message, "test message two");
+        historyInfo = document.createElement("li");
+        historyInfo.className = "history-info";
+        historyInfo.id = `history-${notifID}`;
+        historyInfo.innerHTML = `
+              <a href="#">${slicedhistoryID}</a>
+              <p>${streetName}</p>
+              <p>${formattedTimestamp}</p>
+              <p>${message}</p>
+          `;
+        historyCon.appendChild(historyInfo);
+      } else if (message !== "Passenger Pressed" && !historyInfo) {
+        console.log(message, "test message three");
+        historyInfo = document.createElement("li");
+        historyInfo.className = "history-info";
+        historyInfo.id = `history-${notifID}`;
+        historyInfo.innerHTML = `
+              <a href="#">${slicedhistoryID}</a>
+              <p>${streetName}</p>
+              <p>${formattedTimestamp}</p>
+              <p>${message}</p>
+          `;
+        historyCon.appendChild(historyInfo);
+      }
+    });
   }
 
   window.falseAlarm = function (notifID) {
@@ -683,7 +700,7 @@ function initializeMap() {
         setTimeout(() => {
           promptTab.classList.remove("prompted");
         }, 1500);
-        console.log("Notification message updated to 'cleared'");
+        console.log("Notification message updated to 'False Alarm'");
       })
       .catch((error) => {
         console.error("Error updating notification message:", error);
@@ -697,6 +714,13 @@ function initializeMap() {
         .closest("li")
         .querySelector(".notification-container");
       notifContainer.classList.toggle("reveal");
+
+      document.addEventListener("click", function (e) {
+        // Check if the click was outside the notification container
+        if (!notifContainer.contains(e.target) && e.target !== notifButton) {
+          notifContainer.classList.remove("reveal");
+        }
+      }); // Ensure this listener is removed after execution
     }
   });
 
@@ -750,6 +774,17 @@ function initializeMap() {
   });
 
   document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("false-alarm")) {
+      const notifContainer = event.target.closest(".notification-container");
+      const reportInfo = notifContainer.closest(".report-info");
+      const notifID = reportInfo.id.replace("report-", ""); // Extract notifID
+      notifContainer.classList.remove("reveal");
+
+      falseAlarm(notifID);
+    }
+  });
+
+  document.addEventListener("click", function (event) {
     if (event.target.classList.contains("send-button")) {
       const notifContainer = event.target.closest(".notification-container");
       const reportText = notifContainer.querySelector(".reports-text");
@@ -763,6 +798,12 @@ function initializeMap() {
 
       console.log(notifID, textInput);
       // Call the clearNotif function with notifID and textInput
+      notifContainer.classList.remove("reveal");
+      document.addEventListener("keypress", function (event) {
+        if (event.key == "enter") {
+          clearNotif(notifID, textInput);
+        }
+      });
       clearNotif(notifID, textInput);
     }
   });
@@ -784,7 +825,7 @@ function initializeMap() {
         setTimeout(() => {
           promptTab.classList.remove("prompted");
         }, 1500);
-        console.log("Notification message updated to 'cleared'");
+        console.log(`Notification message updated to '${textInput}'`);
       })
       .catch((error) => {
         console.error("Error updating notification message:", error);
@@ -828,6 +869,8 @@ function initializeMap() {
     const date = new Date(timestamp);
     const formattedTimestamp = date.toLocaleString();
     const timeAgo = timeSince(timestamp);
+
+    console.log(formattedTimestamp, "date tayo preeee");
 
     console.log(
       `Updating marker for Device ID: ${deviceId} at Latitude: ${lat}, Longitude: ${lon}, Timestamp: ${timeAgo}`
