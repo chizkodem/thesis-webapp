@@ -150,6 +150,9 @@ document.addEventListener("click", function (event) {
 document.addEventListener("click", function (event) {
   if (event.target.classList.contains("edit-button")) {
     const editButton = event.target;
+    const buttonCon = editButton
+      .closest("li")
+      .querySelector(".buttons-container");
     const formCon = document.querySelector(".form-container");
     const userName = document.getElementById("user-name");
     const regButton = document.getElementById("register-button");
@@ -161,6 +164,12 @@ document.addEventListener("click", function (event) {
       .closest("li")
       .querySelector(".user-full-name");
     const userEmail = document.getElementById("user-email");
+    const userInfo = document.getElementById(
+      `user-${userEmailText.textContent}`
+    );
+
+    console.log(userEmailText.textContent, "test ALSKDJALSKJD");
+
     formCon.classList.toggle("reveal");
 
     userName.value = userNameText.textContent;
@@ -177,6 +186,8 @@ document.addEventListener("click", function (event) {
     // Define the outsideClickListener function
     function outsideClickListener(e) {
       if (!formCon.contains(e.target) && e.target !== editButton) {
+        userInfo.classList.remove("selected");
+        buttonCon.classList.remove("reveal");
         formCon.classList.remove("reveal");
         userEmail.disabled = false;
         userName.value = "";
@@ -199,18 +210,27 @@ document.addEventListener("click", function (event) {
       .closest("li")
       .querySelector(".buttons-container");
 
+    const user = document.getElementById(`user-${popupButton.textContent}`);
+    user.classList.toggle("selected");
+    // console.log(user, "test LAKSJDLAKSJD");
+
     buttonCon.classList.toggle("reveal");
 
-    document.addEventListener("click", function (e) {
-      // Check if the click was outside the notification container
-      if (
-        !buttonCon.contains(e.target) &&
-        e.target !== popupButton &&
-        !warnDelBtn.classList.contains("reveal")
-      ) {
-        buttonCon.classList.remove("reveal");
-      }
-    }); // Ensure this listener is removed after execution
+    document.addEventListener(
+      "click",
+      function (e) {
+        // Check if the click was outside the notification container
+        if (
+          !buttonCon.contains(e.target) &&
+          e.target !== popupButton &&
+          !warnDelBtn.classList.contains("reveal")
+        ) {
+          buttonCon.classList.remove("reveal");
+          user.classList.remove("selected");
+        }
+      },
+      {once: true}
+    ); // Ensure this listener is removed after execution
   }
 });
 
@@ -251,14 +271,20 @@ document.addEventListener("click", function (event) {
   }
 });
 
-document
-  .querySelector(".warning-cancel-button")
-  .addEventListener("click", () => {
-    const warnDelBtn = document.querySelector(".warning-delete-button");
+document.addEventListener("click", function (event) {
+  if (event.target.classList.contains("warning-cancel-button")) {
+    const warnDelBtn = event.target;
     const warnCon = document.querySelector(".delete-warning");
+    const userInfo = document.querySelector(".user-info.selected");
+    const buttonsCon = document.querySelector(".buttons-container.reveal");
+
+    location.reload();
+    userInfo.classList.remove("selected");
+    buttonsCon.classList.remove("reveal");
     warnDelBtn.classList.remove("reveal");
     warnCon.classList.remove("reveal");
-  });
+  }
+});
 
 document
   .querySelector(".warning-delete-button")
@@ -328,10 +354,12 @@ document.getElementById("update-button").addEventListener("click", () => {
       fullName: fullName,
       email: email,
     });
+
     alert("User Renamed successfully!");
     userEmail.value = "";
     userFullName.value = "";
     userPassword.value = "";
+    location.reload();
   }
 });
 
@@ -354,6 +382,7 @@ async function deleteUser(email) {
 
     const data = await response.text();
     console.log(data); // Log success message
+    alert("User Deleted Succesfully!");
   } catch (error) {
     console.error("Error deleting user:", error);
   }
