@@ -322,7 +322,6 @@ document.getElementById("update-button").addEventListener("click", () => {
       fullName: fullName,
       email: email,
     });
-    alert("Password Changed successfully!");
   } else if (userPassword.value.trim() === "") {
     set(ref(database, "users/" + email.replace(/\./g, ",")), {
       // Replace '.' to avoid issues
@@ -338,13 +337,16 @@ document.getElementById("update-button").addEventListener("click", () => {
 
 async function deleteUser(email) {
   try {
-    const response = await fetch("http://localhost:1314/deleteUser", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({email: email}),
-    });
+    const response = await fetch(
+      "https://hollow-fanatical-quality.glitch.me/deleteUser",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: email}),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -360,7 +362,7 @@ async function deleteUser(email) {
 async function changePassword(email, newPassword) {
   try {
     const response = await fetch(
-      "https://webapp-server-lovat.vercel.app/api/changePassword",
+      "https://hollow-fanatical-quality.glitch.me/changePassword",
       {
         method: "PUT",
         headers: {
@@ -376,6 +378,7 @@ async function changePassword(email, newPassword) {
 
     const data = await response.text();
     console.log(data); // Log success message
+    alert("Password Changed successfully!");
   } catch (error) {
     console.error("Error changing password:", error);
   }
