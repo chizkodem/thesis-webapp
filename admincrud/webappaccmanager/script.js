@@ -387,13 +387,16 @@ async function deleteUser(email) {
 
 async function changePassword(email, newPassword) {
   try {
-    const response = await fetch("http://localhost:1314/changePassword", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({email: email, newPassword: newPassword}),
-    });
+    const response = await fetch(
+      "https://garrulous-fringe-creek.glitch.me/changePassword",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: email, newPassword: newPassword}),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
