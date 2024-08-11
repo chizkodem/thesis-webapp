@@ -443,6 +443,19 @@ p {
   cursor: pointer;
 }
 
+.back-button:hover::after {
+  content: "back";
+  position: absolute;
+  top: -40px;
+  right: 18px;
+  transform: translateX(45%);
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 10px;
+  background-color: rgba(7, 7, 105, 0.9);
+}
+
 .back-button.reveal {
   display: block;
   background-image: url(Img/backbutton.png);

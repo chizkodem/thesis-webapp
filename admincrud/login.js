@@ -36,8 +36,10 @@ document
       const user = userCredential.user;
       const db = getDatabase();
 
+      const updatedEmail = loginEmail.replace(/\./g, ",");
+
       // Retrieve user's full name from Realtime Database
-      const userRef = ref(db, "user/" + user.uid);
+      const userRef = ref(db, "user/" + updatedEmail);
       const userSnapshot = await get(userRef);
 
       if (userSnapshot.exists()) {

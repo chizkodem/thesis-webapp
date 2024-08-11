@@ -16,16 +16,16 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-functions.js"; // Import httpsCallable
 import {update} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js"; // This can be used for updating data
 
-// Your Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAbND1fNWm_WjFXco1ZW9-yAM8WwuPU1nk",
-  authDomain: "login-enhancing-emergencies.firebaseapp.com",
+  apiKey: "AIzaSyDszZls3TGVDO2Et7ahkfTh348oMWE0O9g",
+  authDomain: "thesis-4b44a.firebaseapp.com",
   databaseURL:
-    "https://login-enhancing-emergencies-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "login-enhancing-emergencies",
-  storageBucket: "login-enhancing-emergencies.appspot.com",
-  messagingSenderId: "160225886573",
-  appId: "", // Optional, leave blank if not used
+    "https://thesis-4b44a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "thesis-4b44a",
+  storageBucket: "thesis-4b44a.appspot.com",
+  messagingSenderId: "1003998652306",
+  appId: "1:1003998652306:web:5f24787dd2790ef276434b",
+  measurementId: "G-PS3BK080JQ",
 };
 
 // Initialize Firebase
@@ -33,7 +33,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const auth = getAuth(app);
 
-const userRef = ref(database, "users");
+const userRef = ref(database, "user");
 
 onValue(
   userRef,
@@ -102,7 +102,7 @@ registerButton.addEventListener("click", async (event) => {
     const userId = userCredential.user.uid;
 
     // Save user data to the Realtime Database using email as the user ID
-    await set(ref(database, "users/" + email.replace(/\./g, ",")), {
+    await set(ref(database, "user/" + email.replace(/\./g, ",")), {
       // Replace '.' to avoid issues
       fullName: fullName,
       email: email,
@@ -236,7 +236,7 @@ document.addEventListener("click", function (event) {
 
 function deleteWarning(userEmail) {
   const sanitizedEmail = userEmail.replace(/\./g, ",");
-  const userRef = ref(database, `users/${sanitizedEmail}`); // Reference to the user in the database
+  const userRef = ref(database, `user/${sanitizedEmail}`); // Reference to the user in the database
 
   const userInfo = document.getElementById(`user-${userEmail}`);
   if (userInfo) {
@@ -343,13 +343,13 @@ document.getElementById("update-button").addEventListener("click", () => {
     userEmail.value = "";
     userFullName.value = "";
     userPassword.value = "";
-    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+    set(ref(database, "user/" + email.replace(/\./g, ",")), {
       // Replace '.' to avoid issues
       fullName: fullName,
       email: email,
     });
   } else if (userPassword.value.trim() === "") {
-    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+    set(ref(database, "user/" + email.replace(/\./g, ",")), {
       // Replace '.' to avoid issues
       fullName: fullName,
       email: email,
@@ -365,16 +365,13 @@ document.getElementById("update-button").addEventListener("click", () => {
 
 async function deleteUser(email) {
   try {
-    const response = await fetch(
-      "https://hollow-fanatical-quality.glitch.me/deleteUser",
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({email: email}),
-      }
-    );
+    const response = await fetch("http://localhost:1314/deleteUser", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email: email}),
+    });
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -390,16 +387,13 @@ async function deleteUser(email) {
 
 async function changePassword(email, newPassword) {
   try {
-    const response = await fetch(
-      "https://hollow-fanatical-quality.glitch.me/changePassword",
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({email: email, newPassword: newPassword}),
-      }
-    );
+    const response = await fetch("http://localhost:1314/changePassword", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email: email, newPassword: newPassword}),
+    });
 
     if (!response.ok) {
       throw new Error("Network response was not ok");

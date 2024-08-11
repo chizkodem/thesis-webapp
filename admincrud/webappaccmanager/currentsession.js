@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       // Redirect to login page and display alert
       alert("You are logged out.");
-      window.location.href = "../crudlogin.html";
+      window.location.href = "../admincrudlogin.html";
     }
   } else {
     // Redirect to login page if user data is not available
-    window.location.href = "../crudlogin.html";
+    window.location.href = "../admincrudlogin.html";
   }
 });
 
@@ -25,7 +25,7 @@ function signOut() {
   sessionStorage.removeItem("currentUser");
   console.log("Sign-out successful");
   console.log("Session Storage after sign-out:", sessionStorage);
-  window.location.href = "../crudlogin.html";
+  window.location.href = "../admincrudlogin.html";
 
   // Display the session storage content after clearing
 }
