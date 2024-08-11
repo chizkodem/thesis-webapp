@@ -366,7 +366,7 @@ document.getElementById("update-button").addEventListener("click", () => {
 async function deleteUser(email) {
   try {
     const response = await fetch(
-      "https://hollow-fanatical-quality.glitch.me/deleteUser",
+      "https://mob-crud-server.glitch.me/deleteUser",
       {
         method: "DELETE",
         headers: {
@@ -391,7 +391,7 @@ async function deleteUser(email) {
 async function changePassword(email, newPassword) {
   try {
     const response = await fetch(
-      "https://hollow-fanatical-quality.glitch.me/changePassword",
+      "https://mob-crud-server.glitch.me/changePassword",
       {
         method: "PUT",
         headers: {

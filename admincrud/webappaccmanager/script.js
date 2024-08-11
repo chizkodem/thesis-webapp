@@ -365,13 +365,16 @@ document.getElementById("update-button").addEventListener("click", () => {
 
 async function deleteUser(email) {
   try {
-    const response = await fetch("http://localhost:1314/deleteUser", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({email: email}),
-    });
+    const response = await fetch(
+      "https://admin-crud-server.glitch.me/deleteUser",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: email}),
+      }
+    );
 
     if (!response.ok) {
       throw new Error("Network response was not ok");
@@ -388,7 +391,7 @@ async function deleteUser(email) {
 async function changePassword(email, newPassword) {
   try {
     const response = await fetch(
-      "https://garrulous-fringe-creek.glitch.me/changePassword",
+      "https://admin-crud-server.glitch.me/changePassword",
       {
         method: "PUT",
         headers: {
