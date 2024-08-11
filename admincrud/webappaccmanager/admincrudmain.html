@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile App Account Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="delete-warning">
+      <h1>Delete account</h1>
+      <div class="warning-container">
+        <img src="img/warning.png" alt="" />
+        <p>
+          After you delete an account, it's permanently deleted. Accounts can't
+          be undeleted.
+        </p>
+      </div>
+      <p class="user-account">User account</p>
+      <p class="warning-user-email"></p>
+      <button class="warning-cancel-button">Cancel</button>
+      <button class="warning-delete-button">Delete</button>
+    </div>
+
+    <header class="header">
+      <div class="user-container">
+        <img src="img/empty profile.jpg" alt="" />
+        <div class="admin-container">
+          <p>Admin</p>
+          <p id="user-full-name"></p>
+          <button class="add-user">Add User</button>
+        </div>
+      </div>
+      <div class="logout-container">
+        <a href="#" id="logout-link">
+          <img src="img/logout.png" alt="" />
+        </a>
+      </div>
+    </header>
+
+    <div class="content-container">
+      <ul class="user-list">
+        <li>
+          <h3>User Email</h3>
+          <p>Username</p>
+        </li>
+        <li class="user-info">
+          <div class="buttons-container">
+            <button class="edit-button"></button>
+            <button class="delete-button"></button>
+          </div>
+          <p class="popup-button">jozephjrperez@gmail.com</p>
+          <p class="user-full-name">jozeph raphael perez</p>
+        </li>
+      </ul>
+
+      <div class="form-container">
+        <form>
+          <div class="email-container">
+            <h4>Email:</h4>
+            <input type="email" id="user-email" />
+          </div>
+
+          <div class="full-name-container">
+            <h4>full name:</h4>
+            <input type="text" id="user-name" />
+          </div>
+
+          <div class="password-container">
+            <h4>password:</h4>
+            <input type="password" id="user-password" />
+          </div>
+
+          <button type="button" id="register-button">register</button>
+          <button type="button" id="update-button" class="update-button">
+            update
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+    <script src="currentsession.js"></script>
+  </body>
+</html>

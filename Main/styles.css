@@ -173,9 +173,36 @@ p {
   font-size: 2rem;
 }
 
-.history-list li {
+.history-list li:not(.history-titles) {
   display: flex;
   justify-content: space-between;
+}
+
+.history-titles {
+  padding-right: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.status {
+  margin-left: 130px;
+}
+
+.history-info p {
+  width: 300px;
+  font-size: 1.2rem;
+}
+
+.history-info p:nth-child(1) {
+  width: 200px;
+  font-size: 1.2rem;
+}
+
+.history-info p:nth-child(4) {
+  width: 300px;
+  text-align: end;
+  /* background-color: red; */
+  font-size: 1.2rem;
 }
 
 #map-container {
@@ -366,6 +393,18 @@ p {
   cursor: pointer;
 }
 
+.verified-button:hover::after {
+  content: "status";
+  position: absolute;
+  top: -40px;
+  left: 4px;
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 10px;
+  background-color: rgba(7, 7, 105, 0.9);
+}
+
 .false-alarm {
   background-image: url(Img/falsealarm.png);
   width: 50px;
@@ -376,6 +415,19 @@ p {
   background-color: #960000;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.false-alarm:hover::after {
+  content: "False Alarm";
+  position: absolute;
+  top: -40px;
+  right: 18px;
+  transform: translateX(45%);
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 10px;
+  background-color: rgba(7, 7, 105, 0.9);
 }
 
 .back-button {

@@ -1,0 +1,364 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+  color: white;
+}
+
+body::before {
+  content: "";
+  background-image: url("img/terminal.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.delete-warning {
+  top: 0;
+  position: absolute;
+  width: 400px;
+  height: 200px;
+  background-color: rgba(7, 7, 105);
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
+  color: #94bbf1;
+  padding: 25px 30px;
+  border-radius: 30px;
+  transition: 0.3s ease;
+  display: none;
+}
+
+.delete-warning.reveal {
+  display: block;
+  width: 600px;
+  height: 400px;
+  opacity: 1;
+}
+
+.delete-warning::before {
+  content: "";
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: rgba(47, 47, 122, 0.4);
+  z-index: -1;
+}
+
+.warning-container {
+  padding: 10px 30px;
+  border: 1px solid red;
+  gap: 15px;
+  align-items: center;
+  background-color: rgb(255, 0, 0, 0.2);
+  color: #ec928e;
+  display: flex;
+  margin: 25px 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.user-account {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #658cc4;
+}
+
+.warning-user-email {
+  font-size: 1.5rem;
+  color: #94bbf1;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.warning-delete-button {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: red;
+  border: none;
+  padding: 15px;
+  border-radius: 13px;
+  cursor: pointer;
+}
+
+.warning-delete-button:hover {
+  background-color: rgb(221, 0, 0);
+}
+
+.warning-cancel-button {
+  position: absolute;
+  bottom: 30px;
+  right: 140px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+  border-radius: 13px;
+  color: #658cc4;
+  cursor: pointer;
+}
+
+.warning-cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.delete-warning img {
+  width: 50px;
+}
+
+.header {
+  width: 80%;
+  height: 104px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #070769;
+  border-radius: 30px;
+  padding: 0 30px;
+}
+
+.user-container {
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.user-container img {
+  height: 80%;
+  border-radius: 50%;
+  border: solid 5px #2270d6;
+  margin-right: 10px;
+}
+
+.logout-container {
+  width: fit-content;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.logout-container img {
+  height: 80px;
+}
+
+.content-container {
+  width: 80%;
+  height: 100%;
+  max-height: 800px;
+  background-color: rgba(2, 64, 142, 0.95);
+  border-radius: 30px;
+  box-shadow: 1px 5px 15px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  position: relative;
+  overflow: auto;
+}
+
+.content-container::-webkit-scrollbar {
+  width: 0;
+  opacity: 0;
+}
+
+.user-list {
+  width: 100%;
+  /* background-color: red; */
+  font-size: 1.7rem;
+  position: relative;
+}
+
+.user-info {
+  position: relative;
+}
+
+.user-info.selected {
+  border-radius: 20px;
+  background-color: rgba(7, 7, 105, 0.3);
+}
+
+.buttons-container {
+  position: absolute;
+  width: 0;
+  /* overflow: hidden; */
+  height: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  gap: 10px;
+  /* background-color: red; */
+  transition: 0.3s ease;
+  display: flex;
+}
+
+.buttons-container.reveal {
+  width: 100px;
+}
+
+.buttons-container.reveal .edit-button,
+.buttons-container.reveal .delete-button {
+  transform: translateX(0);
+}
+
+.edit-button {
+  background-image: url(img/edit.png);
+  background-size: 40px;
+  background-color: #070769;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translateX(-100px);
+  transition: 0.3s ease;
+}
+
+.edit-button:hover:after {
+  content: "edit";
+  position: fixed;
+  background-color: rgba(7, 7, 105, 0.5);
+  padding: 10px;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.delete-button {
+  background-image: url(img/delete.png);
+  background-size: 30px;
+  background-color: #c50000;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translateX(-100px);
+  transition: 0.3s ease-in;
+  /* border: none; */
+}
+
+.delete-button:hover:after {
+  content: "delete";
+  position: fixed;
+  background-color: rgba(255, 0, 0, 0.5);
+  padding: 10px;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  z-index: 1;
+  border: none;
+}
+
+#register-button {
+  display: block;
+}
+
+#update-button {
+  display: none;
+}
+
+.popup-button {
+  cursor: pointer;
+}
+
+.admin-container {
+  position: relative;
+}
+
+.add-user {
+  position: absolute;
+  top: 50%;
+  right: -60%;
+  background-color: #2270d6;
+  transform: translateY(-50%);
+  color: white;
+  outline: none;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.form-container {
+  display: flex;
+  position: absolute;
+  background-color: #070769;
+  width: 100%;
+  height: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-radius: 30px;
+  transition: 0.3s ease;
+}
+
+.form-container.reveal {
+  height: 100px;
+}
+
+form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+form input {
+  padding-left: 10px;
+  width: 250px;
+  height: 40px;
+  border-radius: 15px;
+  border: none;
+  background-color: #2270d6;
+  color: white;
+  outline: none;
+}
+
+form button {
+  padding: 10px;
+  border-radius: 20px;
+}
+
+form h4 {
+  margin-left: 10px;
+}
+
+.user-list li {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+}
