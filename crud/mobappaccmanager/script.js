@@ -119,38 +119,6 @@ registerButton.addEventListener("click", async (event) => {
   }
 });
 
-// document.addEventListener("click", function (event){
-//   if (event.target.classList.contains("update-button")){
-
-//   }
-// })
-
-document.getElementById("update-button").addEventListener("click", () => {
-  const userEmail = document.getElementById("user-email");
-  const userPassword = document.getElementById("user-password");
-
-  changePassword(userEmail, userPassword);
-  console.log(userEmail.value, "im gay as fuck");
-});
-
-async function changePassword(email, newPassword) {
-  const user = auth.currentUser;
-
-  console.log(user, "test user ALKSJDLKASJD");
-
-  // if (user) {
-  //   try {
-  //     await updatePassword(user, newPassword);
-  //     alert(`Password updated successfully for email: ${user.email}`);
-  //   } catch (error) {
-  //     console.error("Error updating password:", error);
-  //     alert(error.message); // Display the error message to the user
-  //   }
-  // } else {
-  //   alert("No user is currently signed in.");
-  // }
-}
-
 document.addEventListener("click", function (event) {
   if (event.target.classList.contains("add-user")) {
     const addUser = event.target;
@@ -337,6 +305,37 @@ document.addEventListener("click", (event) => {
   }
 });
 
+document.getElementById("update-button").addEventListener("click", () => {
+  const userEmail = document.getElementById("user-email");
+  const userFullName = document.getElementById("user-name");
+  const userPassword = document.getElementById("user-password");
+  let email = userEmail.value;
+  let fullName = userFullName.value;
+
+  if (userPassword.value.trim() !== "") {
+    changePassword(userEmail.value, userPassword.value);
+    userEmail.value = "";
+    userFullName.value = "";
+    userPassword.value = "";
+    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+      // Replace '.' to avoid issues
+      fullName: fullName,
+      email: email,
+    });
+    alert("Password Changed successfully!");
+  } else if (userPassword.value.trim() === "") {
+    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+      // Replace '.' to avoid issues
+      fullName: fullName,
+      email: email,
+    });
+    alert("User Renamed successfully!");
+    userEmail.value = "";
+    userFullName.value = "";
+    userPassword.value = "";
+  }
+});
+
 async function deleteUser(email) {
   try {
     const response = await fetch("http://localhost:1314/deleteUser", {
@@ -355,5 +354,29 @@ async function deleteUser(email) {
     console.log(data); // Log success message
   } catch (error) {
     console.error("Error deleting user:", error);
+  }
+}
+
+async function changePassword(email, newPassword) {
+  try {
+    const response = await fetch(
+      "https://webapp-server-lovat.vercel.app/api/changePassword",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: email, newPassword: newPassword}),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.text();
+    console.log(data); // Log success message
+  } catch (error) {
+    console.error("Error changing password:", error);
   }
 }
