@@ -339,7 +339,7 @@ document.addEventListener("click", (event) => {
 
 async function deleteUser(email) {
   try {
-    const response = await fetch("http://localhost:3000/deleteUser", {
+    const response = await fetch("http://localhost:1314/deleteUser", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
