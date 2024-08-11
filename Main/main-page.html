@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <title>ADER</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+  </head>
+  <body>
+    <header>
+      <a href="#" class="logo" id="logo">
+        <div class="logo-container">
+          <img src="Img/info logo.png" alt="" />
+        </div>
+      </a>
+
+      <div class="profile">
+        <img src="Img/empty profile.jpg" alt="display photo" />
+        <p id="user-full-name"></p>
+      </div>
+
+      <nav class="navbar">
+        <ul>
+          <li class="selected rep">
+            <div class="notif"></div>
+            <i class="bx bxs-megaphone"></i>
+            <a href="#" class="nav-link">Reports</a>
+          </li>
+          <li class="selected">
+            <i class="bx bx-bus"></i>
+            <a href="#" class="nav-link">Units</a>
+          </li>
+          <li class="selected">
+            <i class="bx bx-phone"></i>
+            <a href="#" class="nav-link" data-content="emergency-hotlines"
+              >Emergency Hotlines</a
+            >
+          </li>
+          <li class="selected">
+            <div class="prompt"></div>
+            <i class="bx bx-history"></i>
+            <a href="#" class="nav-link">History</a>
+          </li>
+          <li>
+            <i class="bx bx-log-out-circle"></i>
+            <a href="#" class="nav-link" id="logout-link">Logout</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="content">
+      <div class="home-container">
+        <div class="title-container">
+          <h2>Home Page</h2>
+        </div>
+        <div class="content-container">
+          <section class="section">
+            <h2>Background</h2>
+            <p>
+              Transportation systems provide essential mobility options
+              globally. However, they face significant challenges in ensuring
+              passenger safety and emergency response due to restricted space,
+              high passenger loads, and emerging risks.
+            </p>
+          </section>
+          <section class="section">
+            <h2>Significance of the Study</h2>
+            <p>
+              This study aims to develop a comprehensive transportation
+              monitoring system using IoT, improving safety and emergency
+              response capabilities in public transportation systems.
+            </p>
+          </section>
+          <section class="section">
+            <h2>Objectives</h2>
+            <ul>
+              <li>
+                Enhance passenger safety through real-time monitoring and
+                alerts.
+              </li>
+              <li>Improve emergency response times and coordination.</li>
+              <li>
+                Address the needs of priority passengers, including the elderly
+                and people with disabilities.
+              </li>
+            </ul>
+          </section>
+          <div class="section">
+            <h2>Goals</h2>
+            <p>
+              The goal is to create a resilient and sustainable public
+              transportation system by integrating advanced IoT technologies to
+              address safety and emergency challenges effectively.
+            </p>
+          </div>
+          <div class="section">
+            <h2>Methodology</h2>
+            <p>
+              Our research involves developing an IoT-enabled monitoring system
+              that integrates various sensors and communication devices for
+              real-time monitoring and response capabilities.
+            </p>
+          </div>
+          <div class="section">
+            <h2>Approach</h2>
+            <p>
+              We will leverage IoT technologies to create an integrated system
+              that detects environmental changes, triggers automatic alerts, and
+              enhances communication and coordination among passengers, drivers,
+              and emergency responders.
+            </p>
+          </div>
+          <div class="section">
+            <h2>Expected Outcomes</h2>
+            <ul>
+              <li>
+                Improved passenger safety and confidence in public
+                transportation systems.
+              </li>
+              <li>Enhanced emergency response times and efficiency.</li>
+              <li>
+                Greater resilience and sustainability of public transportation
+                infrastructure.
+              </li>
+            </ul>
+          </div>
+          <div class="section">
+            <h2>Contact Information</h2>
+            <p>
+              For more information or inquiries, please contact us at
+              <a href="jozephraphael.perez@informatics.edu.ph"
+                >jozephraphael.perez@informatics.edu.ph</a
+              >.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="reports-container">
+        <div class="title-container">
+          <h2>Reports</h2>
+        </div>
+        <div class="content-container">
+          <ul class="reports-list">
+            <li>
+              <h4>UNIT NO.</h4>
+              <p>LOCATION</p>
+              <p>speed</p>
+              <p>Notification</p>
+            </li>
+            <!-- <li>
+              <a href="#">1FB9</a>
+              <p>Exequiel</p>
+              <p>0km/h</p>
+              <div class="notification-container">
+                <p class="notif-button">Driver Pressed
+                  <div class="buttons-container">
+                    <input type="text" class="reports-text">
+                    <button class="verified-button"></button>
+                    <button class="false-alarm" onclick="falseAlarm()"></button>
+                    <button class="back-button"></button>
+                    <button class="send-button"></button>
+                  </div></p>
+              </div>
+            </li> -->
+          </ul>
+        </div>
+      </div>
+
+      <div class="units-container">
+        <div class="title-container">
+          <h2>Units</h2>
+        </div>
+        <div class="content-container">
+          <div id="map-container">
+            <div id="map"></div>
+            <div id="sidebar">
+              <h2>Device Dashboard</h2>
+              <div id="device-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="emergency-hotlines-container">
+        <div class="title-container">
+          <h2>Emergency Hotlines</h2>
+        </div>
+        <div class="stations-container content-container">
+          <button class="resetBtn" onclick="resetClasses()">
+            <i class="bx bx-arrow-back"></i>
+          </button>
+
+          <div class="hospital-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/hospital.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Hospital Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="banner">
+                  <img src="Img/RPHD.png" alt="" />
+                  <div class="titles">
+                    <h1>EXEMPLARY HEALTHCARE EXCELLENCE</h1>
+                    <p>LEADING Hospital IN THE HEART OF PHILIPPINES</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="contacts-list">
+                    <li>
+                      <h2>Hospital Name</h2>
+                      <h2>contacts</h2>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+
+          <div class="police-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/police.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Police Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="police-banner">
+                  <img src="Img/PNP.png" alt="" />
+                  <div class="police-titles">
+                    <h1>REPUBLIC OF THE PHILIPPINES</h1>
+                    <p>PHILIPPINE NATIONAL POLICE</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="police-contacts-list">
+                    <li>
+                      <h2>Police Stations</h2>
+                      <h2>ContactS</h2>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+
+          <div class="fire-container flex-block">
+            <div class="image-container">
+              <a href="#" class="station-btn" onclick="toggleActiveClass(this)">
+                <img src="Img/fire.jpg" alt="" />
+              </a>
+            </div>
+            <div class="station-title">
+              <p>Fire Station</p>
+            </div>
+
+            <div class="contacts-container">
+              <ul class="contacts">
+                <div class="fire-banner">
+                  <img src="Img/BFP.png" alt="" />
+                  <div class="fire-titles">
+                    <h1>PROTECT AND SERVE</h1>
+                    <p>BUREAU OF FIRE PROTECTION</p>
+                  </div>
+                </div>
+
+                <div class="contacts-list-container">
+                  <ul class="fire-contacts-list">
+                    <li>
+                      <h2>Fire Stations</h2>
+                      <h2>Contacts</h2>
+                    </li>
+                  </ul>
+                </div>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-container">
+        <div class="title-container">
+          <h2>History</h2>
+        </div>
+        <div class="content-container">
+          <ul class="history-list">
+            <li class="header">
+              <h4>UNIT NO.</h4>
+              <p>Last Location</p>
+              <p>Data and Time</p>
+              <p>Status</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script type="module" src="leaflet.js" defer></script>
+    <script type="module" src="script.js"></script>
+    <script src="active-station.js"></script>
+    <script src="active-tab.js"></script>
+  </body>
+</html>
