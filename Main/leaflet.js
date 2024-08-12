@@ -883,7 +883,11 @@ function initializeMap() {
     }
   });
 
-  console.log(streetNames, "test streetnames LAKSJDLASJKD");
+  document.querySelector(".units-button").addEventListener("click", () => {
+    map.invalidateSize();
+  });
+
+  // console.log(streetNames, "test streetnames LAKSJDLASJKD");
 
   // Function to clear notification
   window.clearNotif = function (deviceID, message) {
