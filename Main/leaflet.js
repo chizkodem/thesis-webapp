@@ -152,7 +152,7 @@ function initializeMap() {
 
         youtubeLink = notifData.link;
 
-        console.log(youtubeLink, "laskdjlaksdj test");
+        // console.log(youtubeLink, "laskdjlaksdj test");
       });
     },
     (error) => {
@@ -694,8 +694,18 @@ function initializeMap() {
     let dateAndTime = date.toLocaleString();
     let slicedHistoryId = historyId.slice(-4).toUpperCase();
 
+    let sanitizedDate = dateAndTime.replace(/,/g, "");
+
     const historyCon = document.querySelector(".history-list");
     let existingHistoryInfo = document.getElementById(`history-${timestamp}`);
+
+    // console.log(
+    //   slicedHistoryId,
+    //   streetName,
+    //   sanitizedDate,
+    //   message,
+    //   "test history"
+    // );
 
     if (existingHistoryInfo) {
       // Remove the existing element with the same ID
@@ -715,6 +725,7 @@ function initializeMap() {
     `;
 
     // Insert the new element below the header
+
     const header = historyCon.querySelector(".header");
     if (header) {
       historyCon.insertBefore(historyInfo, header.nextSibling);
@@ -732,7 +743,7 @@ function initializeMap() {
     clearPins();
     const notifRef = ref(database, `notifications/${notifID}`);
 
-    // Update the message field to "cleared"
+    // Update the message field to "False Alarm"
     update(notifRef, {message: "False Alarm"}) // Use update() with correct import
       .then(() => {
         const promptTab = document.querySelector(".prompt");
@@ -819,6 +830,13 @@ function initializeMap() {
       const reportInfo = notifContainer.closest(".report-info");
       const notifID = reportInfo.id.replace("report-", ""); // Extract notifID
       notifContainer.classList.remove("reveal");
+      const streetName = streetNames[notifID];
+      const slicedHistoryId = notifID.slice(-4).toUpperCase();
+      let timestamp = Date.now();
+      let date = new Date(Number(timestamp)).toLocaleString().replace(/,/g, ""); // Ensure the timestamp is a number
+
+      console.log(slicedHistoryId, streetName, date, "False Alarm");
+      editCsv(slicedHistoryId, streetName, date, "False Alarm");
 
       falseAlarm(notifID);
     }
@@ -851,10 +869,17 @@ function initializeMap() {
     clearPreviousHospitals();
     clearPins();
     let timestamp = Date.now();
+    let date = new Date(Number(timestamp)); // Ensure the timestamp is a number
+    let dateAndTime = date.toLocaleString();
+    let sanitizedDate = dateAndTime.replace(/,/g, "");
     const historyRef = ref(database, `history/${timestamp}`);
     const notifID = deviceID; // Use deviceID as notifID if applicable
     const notifRef = ref(database, `notifications/${deviceID}`);
     const streetName = streetNames[notifID];
+
+    const slicedHistoryId = notifID.slice(-4).toUpperCase();
+    console.log(slicedHistoryId, streetName, sanitizedDate, message);
+    editCsv(slicedHistoryId, streetName, sanitizedDate, message);
 
     const historyData = {
       deviceID: deviceID,
@@ -863,7 +888,6 @@ function initializeMap() {
       timestamp: timestamp,
     };
 
-    // Update the message field to "cleared"
     set(historyRef, historyData)
       .then(() => {
         const promptTab = document.querySelector(".prompt");
@@ -1027,3 +1051,29 @@ signInWithEmailAndPassword(auth, email, password)
     // Handle login errors
     console.error("Error logging in:", error);
   });
+
+async function editCsv(unitNo, lastKnownLocation, dateTime, status) {
+  try {
+    const response = await fetch("https://csv-server.glitch.me/editCsv", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        unitNo: unitNo,
+        lastKnownLocation: lastKnownLocation,
+        dateTime: dateTime,
+        status: status,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.text();
+    console.log(data); // Log success message
+  } catch (error) {
+    console.error("Error updating CSV:", error);
+  }
+}
