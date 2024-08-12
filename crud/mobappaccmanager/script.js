@@ -49,7 +49,7 @@ onValue(
       const userId = childSnapshot.key;
       const userData = childSnapshot.val();
 
-      gettingUser(userData.email, userData.fullName);
+      gettingUser(userData.email, userData.fullName, userData.contactNo);
     });
   },
   (error) => {
@@ -57,7 +57,7 @@ onValue(
   }
 );
 
-function gettingUser(email, fullname) {
+function gettingUser(email, fullname, contactNo) {
   const userCon = document.querySelector(".user-list");
   let userInfo = document.getElementById(`user-${email}`);
 
@@ -72,6 +72,7 @@ function gettingUser(email, fullname) {
       </div>
       <p class="popup-button">${email}</p>
       <p class="user-full-name">${fullname}</p>
+      <p>${contactNo}</p>
     `;
     userCon.appendChild(userInfo);
   }
@@ -81,6 +82,7 @@ const registerButton = document.getElementById("register-button");
 const emailInput = document.getElementById("user-email");
 const nameInput = document.getElementById("user-name");
 const passwordInput = document.getElementById("user-password");
+const contactInput = document.getElementById("user-contact");
 
 // Prevent the form from submitting and handle registration
 registerButton.addEventListener("click", async (event) => {
@@ -89,6 +91,7 @@ registerButton.addEventListener("click", async (event) => {
   const email = emailInput.value;
   const password = passwordInput.value;
   const fullName = nameInput.value;
+  const contactNo = contactInput.value;
 
   try {
     // Create a new user with email and password
@@ -106,6 +109,7 @@ registerButton.addEventListener("click", async (event) => {
       // Replace '.' to avoid issues
       fullName: fullName,
       email: email,
+      contactNo: contactNo,
     });
 
     alert("User registered successfully!");
@@ -113,6 +117,7 @@ registerButton.addEventListener("click", async (event) => {
     emailInput.value = "";
     nameInput.value = "";
     passwordInput.value = "";
+    contactInput.value = "";
   } catch (error) {
     console.error("Error registering user:", error);
     alert(error.message); // Display the error message to the user

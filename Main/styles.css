@@ -62,10 +62,8 @@ header {
 }
 
 .logo-container {
-  width: 80px;
-  height: 80px;
-  background-color: #468de4;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
 }
 
 .logo img {
@@ -134,6 +132,7 @@ p {
 }
 
 .content-container {
+  position: relative;
   background-color: rgba(2, 64, 142, 0.95);
   width: 100%;
   height: calc(100vh - 170px);
@@ -147,7 +146,7 @@ p {
   height: 100%;
   width: 100%;
   padding: 20px;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .reports-list li {
@@ -155,15 +154,26 @@ p {
   justify-content: space-between;
 }
 
-.reports-list li:nth-child(1) p:nth-child(3) {
-  display: flex;
-  justify-content: space-between;
-  margin-right: 100px;
+.reports-list li p {
+  max-width: 200px;
+  /* background-color: red; */
 }
 
-.report-info p:nth-child(2) {
-  font-size: 1.5rem;
-  text-align: center;
+.reports-list li a {
+  max-width: 80px;
+  width: 100%;
+  /* background-color: red; */
+}
+
+#download-button {
+  padding: 5px 10px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background-color: rgb(7, 7, 105);
+  color: white;
+  font-weight: bold;
+  border-radius: 30px;
 }
 
 .history-list {
@@ -329,15 +339,17 @@ p {
 }
 
 .notification-container {
-  width: fit-content;
+  width: 200px;
   position: relative;
-  height: 48px;
+  height: 32px;
   transition: 0.3s ease;
   overflow: hidden;
+  text-align: end;
+  margin-left: -40px;
 }
 
 .notification-container.reveal {
-  height: 100px;
+  height: 80px;
 }
 
 .notif-button {
@@ -376,7 +388,7 @@ p {
 
 .reports-text.reveal {
   display: block; /* Make sure this is set to block for transition to work */
-  width: 160px; /* Target width for transition */
+  width: 135px; /* Target width for transition */
   padding-left: 10px;
   opacity: 1;
 }
@@ -396,7 +408,7 @@ p {
 .verified-button:hover::after {
   content: "status";
   position: absolute;
-  top: -40px;
+  top: -30px;
   left: 4px;
   padding: 10px;
   font-weight: bold;
@@ -409,7 +421,7 @@ p {
   background-image: url(Img/falsealarm.png);
   width: 50px;
   height: 50px;
-  background-size: 35px;
+  background-size: 40px;
   background-position: center;
   background-repeat: no-repeat;
   background-color: #960000;
@@ -420,7 +432,7 @@ p {
 .false-alarm:hover::after {
   content: "False Alarm";
   position: absolute;
-  top: -40px;
+  top: -30px;
   right: 18px;
   transform: translateX(45%);
   padding: 10px;
@@ -446,7 +458,7 @@ p {
 .back-button:hover::after {
   content: "back";
   position: absolute;
-  top: -40px;
+  top: -30px;
   right: 18px;
   transform: translateX(45%);
   padding: 10px;
@@ -469,6 +481,32 @@ p {
   cursor: pointer;
 }
 
+.send-button {
+  display: none;
+  background-image: url(Img/check.png);
+  width: 50px;
+  height: 50px;
+  background-size: 45px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #00580f;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.send-button:hover::after {
+  content: "send";
+  position: absolute;
+  top: -30px;
+  right: 18px;
+  transform: translateX(45%);
+  padding: 10px;
+  font-weight: bold;
+  color: white;
+  border-radius: 10px;
+  background-color: rgba(7, 7, 105, 0.9);
+}
+
 .animate-glide {
   animation: glide 0.3s ease;
 }
@@ -480,19 +518,6 @@ p {
   100% {
     margin-right: 0;
   }
-}
-
-.send-button {
-  display: none;
-  background-image: url(Img/check.png);
-  width: 50px;
-  height: 50px;
-  background-size: 35px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #00580f;
-  border-radius: 50%;
-  cursor: pointer;
 }
 
 @keyframes prompt {
@@ -975,14 +1000,13 @@ p {
   left: 29.5%;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1300px) {
   *:not(header) {
     font-size: 1rem;
   }
 
   .report-info p:nth-child(2) {
     font-size: 1rem;
-    text-align: center;
   }
 }
 

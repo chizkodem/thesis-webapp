@@ -57,7 +57,7 @@ function initializeMap() {
     locationsRef,
     (snapshot) => {
       console.log("Device data received from Firebase");
-      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+      // console.log(snapshot.val()); // Log the snapshot data to check if data is being received
 
       if (!snapshot.exists()) {
         console.log("No data found in Firebase.");
@@ -68,9 +68,6 @@ function initializeMap() {
       snapshot.forEach((childSnapshot) => {
         const deviceId = childSnapshot.key;
         const data = childSnapshot.val();
-        console.log(
-          `Device ID: ${deviceId}, Latitude: ${data.latitude}, Longitude: ${data.longitude}, Timestamp: ${data.timestamp}, Speed: ${data.speed}`
-        );
         if (data.latitude && data.longitude && data.timestamp) {
           deviceSpeeds[deviceId] = data.speed;
 
@@ -98,7 +95,7 @@ function initializeMap() {
     notifRef,
     (snapshot) => {
       console.log("Notification data received from Firebase");
-      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+      // console.log(snapshot.val()); // Log the snapshot data to check if data is being received
 
       if (!snapshot.exists()) {
         console.log("No data found in Firebase notifications.");
@@ -114,7 +111,7 @@ function initializeMap() {
 
         const speed = deviceSpeeds[notifId];
 
-        console.log(speed, notifId, "test speed");
+        // console.log(speed, notifId, "test speed");
 
         notifying(
           notifId,
@@ -122,7 +119,7 @@ function initializeMap() {
           notifData.latitude,
           notifData.longitude,
           speed,
-          notifData.timestamp
+          notifData.contactNo
         );
       });
     },
@@ -135,8 +132,8 @@ function initializeMap() {
   onValue(
     youtubeRef,
     (snapshot) => {
-      console.log("Notification data received from Firebase");
-      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+      // console.log("Notification data received from Firebase");
+      // console.log(snapshot.val()); // Log the snapshot data to check if data is being received
 
       if (!snapshot.exists()) {
         console.log("No data found in Firebase notifications.");
@@ -148,7 +145,7 @@ function initializeMap() {
         const notifId = childSnapshot.key;
         const notifData = childSnapshot.val();
 
-        console.log(notifData.link);
+        // console.log(notifData.link);
 
         youtubeLink = notifData.link;
 
@@ -163,13 +160,16 @@ function initializeMap() {
   onValue(
     historyRef,
     (snapshot) => {
-      console.log("Notification data received from Firebase");
-      console.log(snapshot.val()); // Log the snapshot data to check if data is being received
+      // console.log("Notification data received from Firebase");
+      // console.log(snapshot.val()); // Log the snapshot data to check if data is being received
 
       if (!snapshot.exists()) {
         console.log("No data found in Firebase notifications.");
         return;
       }
+
+      csvData.length = 1;
+      console.log("csvdata cleared");
 
       // Handle each notification
       snapshot.forEach((childSnapshot) => {
@@ -191,7 +191,7 @@ function initializeMap() {
 
   const streetNames = {}; // Global object to store street names
   // Listen for notifications from Firebase
-  function notifying(notifID, message, lat, lon, speed, timestamp) {
+  function notifying(notifID, message, lat, lon, speed, contactNo) {
     const reportsCon = document.querySelector(".reports-list");
     const notifTab = document.querySelector(".notif");
     let reportInfo = document.getElementById(`report-${notifID}`);
@@ -215,6 +215,7 @@ function initializeMap() {
           <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
           <p>${speed} km/h</p>
+          <p>${contactNo}</p>
           <div class="notification-container">
             <p class="notif-button">${message}
               <div class="buttons-container">
@@ -699,17 +700,12 @@ function initializeMap() {
     const historyCon = document.querySelector(".history-list");
     let existingHistoryInfo = document.getElementById(`history-${timestamp}`);
 
-    // console.log(
-    //   slicedHistoryId,
-    //   streetName,
-    //   sanitizedDate,
-    //   message,
-    //   "test history"
-    // );
+    csvData.push([slicedHistoryId, streetName, sanitizedDate, message]);
+    console.log(csvData);
 
     if (existingHistoryInfo) {
       // Remove the existing element with the same ID
-      console.log("Removing existing element with this ID...");
+      // console.log("Removing existing element with this ID...");
       historyCon.removeChild(existingHistoryInfo);
     }
 
@@ -733,7 +729,7 @@ function initializeMap() {
       historyCon.appendChild(historyInfo);
     }
 
-    console.log(timestamp, "Element added or updated.");
+    // console.log(timestamp, "Element added or updated.");
   };
 
   window.falseAlarm = function (notifID) {
@@ -835,11 +831,39 @@ function initializeMap() {
       let timestamp = Date.now();
       let date = new Date(Number(timestamp)).toLocaleString().replace(/,/g, ""); // Ensure the timestamp is a number
 
-      console.log(slicedHistoryId, streetName, date, "False Alarm");
-      editCsv(slicedHistoryId, streetName, date, "False Alarm");
+      // csvData.push([slicedHistoryId, streetName, date, "False Alarm"]);
+
+      console.log(csvData); // Log to see collected data
 
       falseAlarm(notifID);
     }
+  });
+
+  let csvData = [
+    ["UNIT NO.", "LAST KNOWN LOCATION", "DATE AND TIME", "STATUS"],
+  ]; // Initialize with headers
+
+  // Function to download CSV from collected data
+  function downloadCSV(data, filename) {
+    const csvContent =
+      "data:text/csv;charset=utf-8," + data.map((e) => e.join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+
+    // Append the link to the body and trigger a click
+    document.body.appendChild(link);
+    link.click();
+
+    // Remove the link after downloading
+    document.body.removeChild(link);
+  }
+
+  // Add a separate button for downloading the CSV file
+  const downloadButton = document.getElementById("download-button");
+  downloadButton.addEventListener("click", function () {
+    downloadCSV(csvData, "history.csv");
   });
 
   document.addEventListener("click", function (event) {
@@ -879,7 +903,7 @@ function initializeMap() {
 
     const slicedHistoryId = notifID.slice(-4).toUpperCase();
     console.log(slicedHistoryId, streetName, sanitizedDate, message);
-    editCsv(slicedHistoryId, streetName, sanitizedDate, message);
+    // editCsv(slicedHistoryId, streetName, sanitizedDate, message);
 
     const historyData = {
       deviceID: deviceID,
@@ -928,7 +952,7 @@ function initializeMap() {
 
   function reverseGeocode(lat, lon, callback) {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-    console.log(url);
+
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
@@ -948,9 +972,6 @@ function initializeMap() {
     const formattedTimestamp = date.toLocaleString();
     const timeAgo = timeSince(timestamp);
 
-    console.log(
-      `Updating marker for Device ID: ${deviceId} at Latitude: ${lat}, Longitude: ${lon}, Timestamp: ${timeAgo}`
-    );
     reverseGeocode(lat, lon, (error, streetName) => {
       if (error) {
         console.error("Error reverse geocoding:", error);
