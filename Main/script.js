@@ -42,13 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
   navbarLinks.forEach(function (link) {
     link.addEventListener("click", handleNavClick);
   });
-
-  logoLink.addEventListener("click", function (event) {
-    event.preventDefault();
-    showContent("home-container");
-  });
   // Show only the 'home-container' initially
-  showContent("units-container");
+  showContent("dashboard-container");
 });
 
 function signOut() {
