@@ -75,13 +75,12 @@ function initializeMap() {
         if (data.latitude && data.longitude) {
           deviceSpeeds[deviceId] = data.speed;
 
-          updateMarker(
-            deviceId,
-            data.latitude,
-            data.longitude,
-            deviceSpeeds[deviceId],
-            data.collision
-          );
+          const speed = deviceSpeeds[deviceId] * 3.6; // 0.1962414488196216
+          const roundedSpeed = parseFloat(speed.toFixed(1)); // 0.2
+
+          console.log(roundedSpeed, "test speed calc");
+
+          updateMarker(deviceId, data.latitude, data.longitude, roundedSpeed);
         } else {
           console.log(
             `Data for Device ID ${deviceId} is missing latitude, longitude,`
@@ -1079,7 +1078,7 @@ function initializeMap() {
       });
   }
 
-  function updateMarker(deviceId, lat, lon, speed, collision) {
+  function updateMarker(deviceId, lat, lon, speed) {
     // console.log(collision, "test collision");
 
     reverseGeocode(lat, lon, (error, streetName) => {
@@ -1102,11 +1101,11 @@ function initializeMap() {
       }
 
       // Update the sidebar with the latest device info
-      updateSidebar(deviceId, streetName, speed, collision);
+      updateSidebar(deviceId, streetName, speed);
     });
   }
 
-  function updateSidebar(deviceId, streetName, speed, collision) {
+  function updateSidebar(deviceId, streetName, speed) {
     const deviceList = document.getElementById("device-list");
     const numCon = document.querySelector(".unit-number-container");
     let deviceInfo = document.getElementById(`device-${deviceId}`);
@@ -1126,7 +1125,6 @@ function initializeMap() {
       <h3>Device ID: ${deviceLastFourChar}</h3>
       <p><b>Street:</b> ${streetName}</p>
       <p><b>Speed:</b> ${speed}KM/H</p>
-      <p>Collision: ${collision}</p>
     `;
   }
 }

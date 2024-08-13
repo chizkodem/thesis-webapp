@@ -32,6 +32,11 @@ body::before {
   min-height: 480px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.logo-container img {
+  width: 100px;
 }
 
 .container p {
@@ -72,13 +77,13 @@ body::before {
 }
 
 .container form {
-  /* background-color: #fff; */
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   padding: 0 40px;
   height: 100%;
+  width: 100%;
 }
 
 .container input {
@@ -95,6 +100,7 @@ body::before {
 .form-container {
   top: 0;
   height: 100%;
+  width: 100%;
 }
 
 .social-icons a {
