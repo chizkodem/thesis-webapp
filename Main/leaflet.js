@@ -50,6 +50,7 @@ function initializeMap() {
   const notifRef = ref(database, "notifications");
   const youtubeRef = ref(database, "stream");
   const historyRef = ref(database, "history");
+  const collisionsRef = ref(database, "collisionInstance");
   // Listen for location updates from devices
 
   let deviceSpeeds = {};
@@ -73,9 +74,6 @@ function initializeMap() {
         const data = childSnapshot.val();
         if (data.latitude && data.longitude) {
           deviceSpeeds[deviceId] = data.speed;
-          collision[deviceId] = data.collision;
-
-          checkCollision(deviceId, collision[deviceId]);
 
           updateMarker(
             deviceId,
@@ -200,11 +198,31 @@ function initializeMap() {
     }
   );
 
+  onValue(collisionsRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      console.log("No data found in Firebase Collisions.");
+      return;
+    }
+
+    snapshot.forEach((childSnapshot) => {
+      const colId = childSnapshot.key;
+      const colData = childSnapshot.val();
+
+      collision[colId] = colData.collision;
+
+      console.log(collision[colId], colId, "test collision");
+
+      checkCollision(colId, collision[colId]);
+    });
+  });
+
   function checkCollision(notifID, collision) {
     const notifRef = ref(database, `notifications/${notifID}`);
 
+    console.log("test check collision");
+
     // Update the message field to "False Alarm"
-    if (collision === true) {
+    if (collision) {
       update(notifRef, {message: "Possible Collision"}) // Use update() with correct import
         .then(() => {
           const promptTab = document.querySelector(".prompt");
@@ -810,8 +828,8 @@ function initializeMap() {
     clearPreviousHospitals();
     clearPins();
     const notifRef = ref(database, `notifications/${notifID}`);
-    const locationsRef = ref(database, `locations/${notifID}`);
-    update(locationsRef, {collision: false});
+    const collisionsRef = ref(database, `collisionInstance/${notifID}`);
+    update(collisionsRef, {collision: false});
 
     // Update the message field to "False Alarm"
     update(notifRef, {message: "False Alarm"}) // Use update() with correct import
@@ -905,8 +923,6 @@ function initializeMap() {
       let timestamp = Date.now();
       let date = new Date(Number(timestamp)).toLocaleString().replace(/,/g, ""); // Ensure the timestamp is a number
 
-      // csvData.push([slicedHistoryId, streetName, date, "False Alarm"]);
-
       console.log(csvData); // Log to see collected data
 
       falseAlarm(notifID);
@@ -970,64 +986,80 @@ function initializeMap() {
     clearPreviousFireStations();
     clearPreviousHospitals();
     clearPins();
+
     let timestamp = Date.now();
     let date = new Date(Number(timestamp)); // Ensure the timestamp is a number
     let dateAndTime = date.toLocaleString();
     let sanitizedDate = dateAndTime.replace(/,/g, "");
-    const historyRef = ref(database, `history/${timestamp}`);
     const notifID = deviceID; // Use deviceID as notifID if applicable
     const notifRef = ref(database, `notifications/${deviceID}`);
     const streetName = streetNames[notifID];
-    const locationsRef = ref(database, `locations/${notifID}`);
-    update(locationsRef, {collision: false});
+    const collisionsRef = ref(database, `collisionInstance/${notifID}`);
 
-    const slicedHistoryId = notifID.slice(-4).toUpperCase();
-    console.log(slicedHistoryId, streetName, sanitizedDate, message);
-    // editCsv(slicedHistoryId, streetName, sanitizedDate, message);
-
-    const historyData = {
-      deviceID: deviceID,
-      message: message,
-      streetName: streetName,
-      timestamp: timestamp,
-    };
-
-    update(notifRef, {message: message})
+    update(collisionsRef, {collision: false})
       .then(() => {
-        console.log("Notification message updated to 'False Alarm'");
+        console.log("Collision flag updated successfully");
       })
       .catch((error) => {
-        console.error("Error updating notification message:", error);
+        console.error("Error updating collision flag:", error);
       });
 
-    set(historyRef, historyData)
+    const slicedHistoryId = notifID.slice(-4).toUpperCase();
+    console.log(slicedHistoryId, streetName, sanitizedDate, message, "test");
+    setHistory(
+      slicedHistoryId,
+      streetName,
+      sanitizedDate,
+      message,
+      timestamp,
+      notifID
+    );
+
+    update(notifRef, {message: message})
       .then(() => {
         const promptTab = document.querySelector(".prompt");
         promptTab.classList.add("prompted");
         setTimeout(() => {
           promptTab.classList.remove("prompted");
         }, 1500);
+        console.log("Notification message updated to 'False Alarm'");
+      })
+      .catch((error) => {
+        console.error("Error updating notification message:", error);
+      });
+
+    console.log("Before the final log");
+  };
+
+  function setHistory(
+    slicedHistoryId,
+    streetName,
+    sanitizedDate,
+    message,
+    timestamp,
+    deviceID
+  ) {
+    console.log(
+      slicedHistoryId,
+      streetName,
+      sanitizedDate,
+      message,
+      "testing if this will log"
+    );
+    const historyRef = ref(database, `history/${timestamp}`);
+    const historyData = {
+      deviceID: deviceID,
+      message: message,
+      streetName: streetName || "undefined",
+      timestamp: timestamp,
+    };
+    set(historyRef, historyData)
+      .then(() => {
         console.log("History entry added successfully:", historyData);
       })
       .catch((error) => {
         console.error("Error adding history entry:", error);
       });
-  };
-
-  function timeSince(timestamp) {
-    const now = new Date();
-    const secondsPast = (now - new Date(timestamp)) / 1000;
-
-    if (secondsPast < 60) {
-      return `${Math.floor(secondsPast)} seconds ago`;
-    }
-    if (secondsPast < 3600) {
-      return `${Math.floor(secondsPast / 60)} minutes ago`;
-    }
-    if (secondsPast < 86400) {
-      return `${Math.floor(secondsPast / 3600)} hours ago`;
-    }
-    return `${Math.floor(secondsPast / 86400)} days ago`;
   }
 
   function reverseGeocode(lat, lon, callback) {
@@ -1144,29 +1176,3 @@ signInWithEmailAndPassword(auth, email, password)
     // Handle login errors
     console.error("Error logging in:", error);
   });
-
-async function editCsv(unitNo, lastKnownLocation, dateTime, status) {
-  try {
-    const response = await fetch("https://csv-server.glitch.me/editCsv", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        unitNo: unitNo,
-        lastKnownLocation: lastKnownLocation,
-        dateTime: dateTime,
-        status: status,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const data = await response.text();
-    console.log(data); // Log success message
-  } catch (error) {
-    console.error("Error updating CSV:", error);
-  }
-}
