@@ -3,6 +3,7 @@ import {
   getDatabase,
   ref,
   set,
+  get,
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 import {
@@ -52,6 +53,8 @@ function initializeMap() {
   // Listen for location updates from devices
 
   let deviceSpeeds = {};
+  let contactNos = {};
+  let collision = {};
 
   onValue(
     locationsRef,
@@ -68,19 +71,22 @@ function initializeMap() {
       snapshot.forEach((childSnapshot) => {
         const deviceId = childSnapshot.key;
         const data = childSnapshot.val();
-        if (data.latitude && data.longitude && data.timestamp) {
+        if (data.latitude && data.longitude) {
           deviceSpeeds[deviceId] = data.speed;
+          collision[deviceId] = data.collision;
+
+          checkCollision(deviceId, collision[deviceId]);
 
           updateMarker(
             deviceId,
             data.latitude,
             data.longitude,
-            data.timestamp,
-            data.speed
+            deviceSpeeds[deviceId],
+            data.collision
           );
         } else {
           console.log(
-            `Data for Device ID ${deviceId} is missing latitude, longitude, or timestamp.`
+            `Data for Device ID ${deviceId} is missing latitude, longitude,`
           );
         }
       });
@@ -109,7 +115,12 @@ function initializeMap() {
         const notifId = childSnapshot.key;
         const notifData = childSnapshot.val();
 
+        contactNos[notifId] = notifData.contactNo;
+
+        const contactNo = contactNos[notifId];
         const speed = deviceSpeeds[notifId];
+
+        console.log(contactNos, "test number");
 
         // console.log(speed, notifId, "test speed");
 
@@ -189,6 +200,22 @@ function initializeMap() {
     }
   );
 
+  function checkCollision(notifID, collision) {
+    const notifRef = ref(database, `notifications/${notifID}`);
+
+    // Update the message field to "False Alarm"
+    if (collision === true) {
+      update(notifRef, {message: "Possible Collision"}) // Use update() with correct import
+        .then(() => {
+          const promptTab = document.querySelector(".prompt");
+          console.log("Notification message updated to 'Possible Collision'");
+        })
+        .catch((error) => {
+          console.error("Error updating notification message:", error);
+        });
+    }
+  }
+
   const streetNames = {}; // Global object to store street names
   // Listen for notifications from Firebase
   function notifying(notifID, message, lat, lon, speed, contactNo) {
@@ -198,7 +225,11 @@ function initializeMap() {
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
     reverseGeocode(lat, lon, (error, streetName) => {
-      if (message === "Driver Pressed" || message === "Passenger Pressed") {
+      if (
+        message === "Driver Pressed" ||
+        message === "Passenger Pressed" ||
+        message === "Possible Collision"
+      ) {
         notifTab.classList.add("notified");
 
         streetNames[notifID] = streetName;
@@ -212,9 +243,8 @@ function initializeMap() {
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
-          <a href="${youtubeLink}" target="blank_" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
+          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
           <p>${streetName}</p>
-          <p>${speed} km/h</p>
           <p>${contactNo}</p>
           <div class="notification-container">
             <p class="notif-button">${message}
@@ -239,6 +269,16 @@ function initializeMap() {
       }
     });
   }
+
+  document.addEventListener("click", function (event) {
+    const iframe = document.getElementById("footage");
+    const link = document.getElementById("toggleLink");
+
+    // Check if the click was outside the iframe and the link
+    if (!link.contains(event.target) && !iframe.contains(event.target)) {
+      iframe.style.display = "none"; // Hide the iframe
+    }
+  });
 
   window.addHistory = function (deviceID, streetName) {
     // Create a reference to the specific timestamp key
@@ -271,9 +311,41 @@ function initializeMap() {
     contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
   }
 
+  async function getCctv(deviceID) {
+    console.log(deviceID, "testing cctv id");
+
+    try {
+      // Fetch the data snapshot
+      const snapshot = await get(youtubeRef);
+
+      if (!snapshot.exists()) {
+        console.log("No data found in Firebase notifications.");
+        return;
+      }
+
+      // Handle each notification
+      snapshot.forEach((childSnapshot) => {
+        const notifId = childSnapshot.key;
+        const notifData = childSnapshot.val();
+
+        const youtubeLink = notifData.link;
+
+        const cctv = document.getElementById("footage");
+        cctv.src = youtubeLink;
+        cctv.style.display = "block";
+
+        // console.log(cctv.src, "test link");
+
+        // console.log(youtubeLink, "test link");
+      });
+    } catch (error) {
+      console.error("Error fetching notifications from Firebase:", error);
+    }
+  }
+
   window.nearestHospital = function (deviceId, lat, lon) {
     clearPreviousHospitals();
-
+    getCctv(deviceId);
     var radius = 5000; // Fixed radius
     var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lon});out;`;
 
@@ -738,6 +810,8 @@ function initializeMap() {
     clearPreviousHospitals();
     clearPins();
     const notifRef = ref(database, `notifications/${notifID}`);
+    const locationsRef = ref(database, `locations/${notifID}`);
+    update(locationsRef, {collision: false});
 
     // Update the message field to "False Alarm"
     update(notifRef, {message: "False Alarm"}) // Use update() with correct import
@@ -904,6 +978,8 @@ function initializeMap() {
     const notifID = deviceID; // Use deviceID as notifID if applicable
     const notifRef = ref(database, `notifications/${deviceID}`);
     const streetName = streetNames[notifID];
+    const locationsRef = ref(database, `locations/${notifID}`);
+    update(locationsRef, {collision: false});
 
     const slicedHistoryId = notifID.slice(-4).toUpperCase();
     console.log(slicedHistoryId, streetName, sanitizedDate, message);
@@ -916,6 +992,14 @@ function initializeMap() {
       timestamp: timestamp,
     };
 
+    update(notifRef, {message: message})
+      .then(() => {
+        console.log("Notification message updated to 'False Alarm'");
+      })
+      .catch((error) => {
+        console.error("Error updating notification message:", error);
+      });
+
     set(historyRef, historyData)
       .then(() => {
         const promptTab = document.querySelector(".prompt");
@@ -927,14 +1011,6 @@ function initializeMap() {
       })
       .catch((error) => {
         console.error("Error adding history entry:", error);
-      });
-
-    update(notifRef, {message: message})
-      .then(() => {
-        console.log("Notification message updated to 'False Alarm'");
-      })
-      .catch((error) => {
-        console.error("Error updating notification message:", error);
       });
   };
 
@@ -971,10 +1047,8 @@ function initializeMap() {
       });
   }
 
-  function updateMarker(deviceId, lat, lon, timestamp, speed) {
-    const date = new Date(timestamp);
-    const formattedTimestamp = date.toLocaleString();
-    const timeAgo = timeSince(timestamp);
+  function updateMarker(deviceId, lat, lon, speed, collision) {
+    // console.log(collision, "test collision");
 
     reverseGeocode(lat, lon, (error, streetName) => {
       if (error) {
@@ -985,7 +1059,6 @@ function initializeMap() {
       const popupContent = `
         <b>Device ID:</b> ${deviceId}<br>
         <b>Street:</b> ${streetName}<br>
-        <b>Updated:</b> ${timeAgo} (${formattedTimestamp})
       `;
 
       if (markers[deviceId]) {
@@ -997,17 +1070,11 @@ function initializeMap() {
       }
 
       // Update the sidebar with the latest device info
-      updateSidebar(deviceId, timeAgo, formattedTimestamp, streetName, speed);
+      updateSidebar(deviceId, streetName, speed, collision);
     });
   }
 
-  function updateSidebar(
-    deviceId,
-    timeAgo,
-    formattedTimestamp,
-    streetName,
-    speed
-  ) {
+  function updateSidebar(deviceId, streetName, speed, collision) {
     const deviceList = document.getElementById("device-list");
     const numCon = document.querySelector(".unit-number-container");
     let deviceInfo = document.getElementById(`device-${deviceId}`);
@@ -1026,7 +1093,8 @@ function initializeMap() {
     deviceInfo.innerHTML = `
       <h3>Device ID: ${deviceLastFourChar}</h3>
       <p><b>Street:</b> ${streetName}</p>
-      <p><b>Last Update:</b> ${timeAgo} (${formattedTimestamp})</p>
+      <p><b>Speed:</b> ${speed}KM/H</p>
+      <p>Collision: ${collision}</p>
     `;
   }
 }

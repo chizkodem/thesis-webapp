@@ -141,6 +141,14 @@ p {
   padding: 10px;
 }
 
+#footage {
+  position: absolute;
+  transform: scale(170%) translateX(-50%) translateY(-50%);
+  top: 50%;
+  left: 50%;
+  border-radius: 10px;
+}
+
 .reports-list {
   display: block;
   height: 100%;
@@ -155,7 +163,7 @@ p {
 }
 
 .reports-list li p {
-  max-width: 200px;
+  max-width: 250px;
   /* background-color: red; */
 }
 
@@ -339,7 +347,7 @@ p {
 }
 
 .notification-container {
-  width: 200px;
+  width: 220px;
   position: relative;
   height: 32px;
   transition: 0.3s ease;
