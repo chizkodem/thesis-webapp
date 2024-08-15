@@ -36,8 +36,12 @@
             <a href="#" class="nav-link">Reports</a>
           </li>
           <li class="selected units-button">
-            <i class="bx bx-bus"></i>
+            <i class="bx bx-map"></i>
             <a href="#" class="nav-link">Dashboard</a>
+          </li>
+          <li class="selected units-button">
+            <i class="bx bx-bus"></i>
+            <a href="#" class="nav-link">Units</a>
           </li>
           <li class="selected">
             <i class="bx bx-phone"></i>
@@ -72,8 +76,8 @@
             frameborder="0"
           ></iframe>
           <ul class="reports-list">
-            <li>
-              <h4>UNIT NO.</h4>
+            <li class="reports-titles">
+              <h4>E-jeep NO. Plate No.</h4>
               <p>LOCATION</p>
               <p>Contact No.</p>
               <p>Notification</p>
@@ -94,6 +98,19 @@
               <div id="device-list"></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="units-container">
+        <div class="title-container">
+          <h2>Units</h2>
+        </div>
+        <div class="content-container">
+          <div class="add-unit-container">
+            <input type="text" id="plateNo" />
+            <button onclick="addUnit()">add a unit</button>
+          </div>
+          <div class="units-list"></div>
         </div>
       </div>
 

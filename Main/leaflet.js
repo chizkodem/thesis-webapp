@@ -4,6 +4,7 @@ import {
   ref,
   set,
   get,
+  child,
   onValue,
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 import {
@@ -51,6 +52,7 @@ function initializeMap() {
   const youtubeRef = ref(database, "stream");
   const historyRef = ref(database, "history");
   const collisionsRef = ref(database, "collisionInstance");
+  const unitsRef = ref(database, "units");
   // Listen for location updates from devices
 
   let deviceSpeeds = {};
@@ -77,8 +79,6 @@ function initializeMap() {
 
           const speed = deviceSpeeds[deviceId] * 3.6; // 0.1962414488196216
           const roundedSpeed = parseFloat(speed.toFixed(1)); // 0.2
-
-          console.log(roundedSpeed, "test speed calc");
 
           updateMarker(deviceId, data.latitude, data.longitude, roundedSpeed);
         } else {
@@ -116,8 +116,6 @@ function initializeMap() {
 
         const contactNo = contactNos[notifId];
         const speed = deviceSpeeds[notifId];
-
-        console.log(contactNos, "test number");
 
         // console.log(speed, notifId, "test speed");
 
@@ -165,6 +163,26 @@ function initializeMap() {
     }
   );
 
+  onValue(unitsRef, (snapshot) => {
+    if (!snapshot.exists()) {
+      console.log("No data found in Firebase notifications.");
+      return;
+    }
+
+    snapshot.forEach((childSnapshot) => {
+      const eJeepNo = childSnapshot.key;
+      const eJeepData = childSnapshot.val();
+
+      getUnit(
+        eJeepNo,
+        eJeepData.contactNo,
+        eJeepData.status,
+        eJeepData.condition,
+        eJeepData.plateNo
+      );
+    });
+  });
+
   onValue(
     historyRef,
     (snapshot) => {
@@ -177,7 +195,6 @@ function initializeMap() {
       }
 
       csvData.length = 1;
-      console.log("csvdata cleared");
 
       // Handle each notification
       snapshot.forEach((childSnapshot) => {
@@ -209,16 +226,12 @@ function initializeMap() {
 
       collision[colId] = colData.collision;
 
-      console.log(collision[colId], colId, "test collision");
-
       checkCollision(colId, collision[colId]);
     });
   });
 
   function checkCollision(notifID, collision) {
     const notifRef = ref(database, `notifications/${notifID}`);
-
-    console.log("test check collision");
 
     // Update the message field to "False Alarm"
     if (collision) {
@@ -292,8 +305,10 @@ function initializeMap() {
     const link = document.getElementById("toggleLink");
 
     // Check if the click was outside the iframe and the link
-    if (!link.contains(event.target) && !iframe.contains(event.target)) {
-      iframe.style.display = "none"; // Hide the iframe
+    if (link) {
+      if (!link.contains(event.target) && !iframe.contains(event.target)) {
+        iframe.style.display = "none"; // Hide the iframe
+      }
     }
   });
 
@@ -790,7 +805,6 @@ function initializeMap() {
     let existingHistoryInfo = document.getElementById(`history-${timestamp}`);
 
     csvData.push([slicedHistoryId, streetName, sanitizedDate, message]);
-    console.log(csvData);
 
     if (existingHistoryInfo) {
       // Remove the existing element with the same ID
@@ -1105,6 +1119,113 @@ function initializeMap() {
     });
   }
 
+  window.addUnit = function () {
+    // Get the current data in the "units" database
+    const plateNo = document.getElementById("plateNo");
+    if (plateNo.value.trim() == "") {
+      alert("Enter the plate number");
+      return;
+    }
+    get(unitsRef)
+      .then((snapshot) => {
+        const unitData = snapshot.exists() ? snapshot.val() : {};
+        const keys = Object.keys(unitData);
+
+        let nextKey;
+
+        if (keys.length === 0) {
+          // If no units exist, create the first entry with key "01"
+          nextKey = "01";
+        } else {
+          // Create a set of existing keys
+          const existingKeys = new Set(keys.map((key) => parseInt(key, 10)));
+
+          // Find the lowest available key
+          for (let i = 1; i <= keys.length + 1; i++) {
+            if (!existingKeys.has(i)) {
+              nextKey = String(i).padStart(2, "0");
+              break;
+            }
+          }
+        }
+
+        // Add new unit data under the next available key
+        const newUnitRef = child(unitsRef, nextKey);
+        set(newUnitRef, {
+          gmail: "",
+          plateNo: plateNo.value,
+          status: "Unoccupied",
+          condition: "Active",
+          contactNo: "",
+        })
+          .then(() => {
+            console.log(`Data saved successfully under key ${nextKey}!`);
+            plateNo.value = "";
+          })
+          .catch((error) => {
+            console.error("Error saving data: ", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error retrieving data: ", error);
+      });
+  };
+
+  window.deleteUnit = function (eJeepNo) {
+    const ejeep = document.getElementById(`ejeep-${eJeepNo}`);
+
+    const unitsRef = ref(database, `units/${eJeepNo}`);
+    console.log(unitsRef);
+
+    set(unitsRef, null);
+
+    ejeep.remove();
+  };
+
+  function getUnit(eJeepNo, contactNo, status, condition, plateNo) {
+    const unitList = document.querySelector(".units-list");
+    let unitInfo = document.getElementById(`ejeep-${eJeepNo}`);
+
+    if (!unitInfo) {
+      unitInfo = document.createElement("div");
+      unitInfo.className = "ejeep-container";
+      unitInfo.id = `ejeep-${eJeepNo}`;
+      unitList.appendChild(unitInfo);
+    }
+    unitInfo.innerHTML = `
+      <p class="ejeep-number" id="ejeep-no-${eJeepNo}" onmouseover="showJeepBtnCon()" onmouseout="showJeepBtnCon()">E-jeep No: ${eJeepNo}</p>
+      <p class="ejeep-${eJeepNo}-driver" id="ejeep-${eJeepNo}-driver">Driver: </p>
+      <p class="ejeep-${eJeepNo}-contact" id="ejeep-${eJeepNo}-contact">
+        Contact No: ${contactNo}
+      </p>
+      <p class="ejeep-${eJeepNo}-status" id="ejeep-${eJeepNo}-status">
+        Status: ${status}
+      </p>
+      <p class="ejeep-${eJeepNo}-condition" id="ejeep-${eJeepNo}-condition">
+        Condition: ${condition}
+      </p>
+      <p class="ejeep-${eJeepNo}-plateNo" id="ejeep-${eJeepNo}-plateNo">Plate No: ${plateNo}</p>
+      <div class="jeep-button-container" id="jeep-no-${eJeepNo}-button-container">
+        <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="deleteUnit('${eJeepNo}')">delete</button>
+      </div>
+    `;
+    let titleNo = document.getElementById(`ejeep-no-${eJeepNo}`);
+    const jeepBtnCon = document.getElementById(
+      `jeep-no-${eJeepNo}-button-container`
+    );
+
+    if (status == "Occupied") {
+      unitInfo.style.backgroundColor = "#1d692a";
+      unitInfo.style.border = "5px solid #10e633";
+      titleNo.style.border = "5px solid #10e633";
+      jeepBtnCon.style.display = "none";
+    } else if (condition == "Under Maintenance") {
+      unitInfo.style.backgroundColor = "#6b1212";
+      unitInfo.style.border = "5px solid red";
+      titleNo.style.border = "5px solid red";
+    }
+  }
+
   function updateSidebar(deviceId, streetName, speed) {
     const deviceList = document.getElementById("device-list");
     const numCon = document.querySelector(".unit-number-container");
@@ -1128,6 +1249,10 @@ function initializeMap() {
     `;
   }
 }
+
+window.showJeepBtnCon = function () {
+  console.log("I'm gay");
+};
 
 window.backButton = function () {
   const unitNoCon = document.querySelector(".unit-number-container");

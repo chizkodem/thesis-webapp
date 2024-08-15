@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     link.addEventListener("click", handleNavClick);
   });
   // Show only the 'home-container' initially
-  showContent("dashboard-container");
+  showContent("units-container");
 });
 
 function signOut() {
