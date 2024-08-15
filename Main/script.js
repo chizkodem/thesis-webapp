@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
     link.addEventListener("click", handleNavClick);
   });
   // Show only the 'home-container' initially
-  showContent("units-container");
+  showContent("driver-manager-container");
 });
 
 function signOut() {

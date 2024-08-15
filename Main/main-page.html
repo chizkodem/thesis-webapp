@@ -9,6 +9,7 @@
     />
     <title>ADER</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="crudstyles.css" />
     <script src="script.js" defer></script>
     <link
       rel="stylesheet"
@@ -16,6 +17,21 @@
     />
   </head>
   <body>
+    <div class="delete-warning">
+      <h1>Delete account</h1>
+      <div class="warning-container">
+        <img src="img/warning.png" alt="" />
+        <p>
+          After you delete an account, it's permanently deleted. Accounts can't
+          be undeleted.
+        </p>
+      </div>
+      <p class="user-account">User account</p>
+      <p class="warning-user-email"></p>
+      <button class="warning-cancel-button">Cancel</button>
+      <button class="warning-delete-button">Delete</button>
+    </div>
+
     <header>
       <a href="#" class="logo" id="logo">
         <div class="logo-container">
@@ -53,6 +69,11 @@
             <div class="prompt"></div>
             <i class="bx bx-history"></i>
             <a href="#" class="nav-link">History</a>
+          </li>
+          <li class="selected">
+            <div class="prompt"></div>
+            <i class="bx bxs-user-account"></i>
+            <a href="#" class="nav-link">Driver Manager</a>
           </li>
           <li>
             <i class="bx bx-log-out-circle"></i>
@@ -237,11 +258,57 @@
           </ul>
         </div>
       </div>
+
+      <div class="driver-manager-container">
+        <div class="title-container">
+          <button class="add-user">Add Driver</button>
+          <h2>Driver Account Manager</h2>
+        </div>
+        <div class="content-container">
+          <ul class="user-list">
+            <li>
+              <h3>Driver Email</h3>
+              <p>Driver Name</p>
+              <p>Contact No.</p>
+            </li>
+          </ul>
+
+          <div class="form-container">
+            <form>
+              <div class="email-container">
+                <h4>Email:</h4>
+                <input type="email" id="user-email" />
+              </div>
+
+              <div class="full-name-container">
+                <h4>full name:</h4>
+                <input type="text" id="user-name" />
+              </div>
+
+              <div class="password-container">
+                <h4>password:</h4>
+                <input type="password" id="user-password" />
+              </div>
+
+              <div class="contact-container">
+                <h4>Contact No.:</h4>
+                <input type="text" id="user-contact" />
+              </div>
+
+              <button type="button" id="register-button">register</button>
+              <button type="button" id="update-button" class="update-button">
+                update
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script type="module" src="leaflet.js" defer></script>
     <script type="module" src="script.js"></script>
+    <script type="module" src="crudscript.js"></script>
     <script src="active-station.js"></script>
     <script src="active-tab.js"></script>
   </body>

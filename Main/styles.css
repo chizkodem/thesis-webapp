@@ -169,11 +169,14 @@ p {
   font-size: 1rem;
 }
 
+.reports-titles {
+  align-items: center;
+}
+
 .history-list li,
 .reports-list li {
   display: flex;
   justify-content: space-between;
-  align-items: center;
 }
 
 .history-titles p {
@@ -211,6 +214,10 @@ p {
   width: 100%;
   max-width: 180px;
   /* background-color: red; */
+}
+
+.reports-titles p:nth-child(4) {
+  width: 200px;
 }
 
 .history-info p {
@@ -270,6 +277,11 @@ p {
   color: white;
 }
 
+.ejeep-container:hover .jeep-deactivate-button,
+.ejeep-container:hover .jeep-delete-button {
+  transform: translateX(0);
+}
+
 .ejeep-number {
   position: absolute;
   width: 150px;
@@ -283,12 +295,44 @@ p {
   border-radius: 30px;
   text-align: center;
 }
+
+.jeep-button-container {
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  right: 0;
+  bottom: 0;
+}
+
+.jeep-deactivate-button {
+  background-image: url(Img/deactivate.png);
+  width: 40px;
+  height: 40px;
+  background-size: 30px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: orange;
+  transform: translateX(100%);
+  border-radius: 50%;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
 .jeep-delete-button {
-  padding: 5px;
-  border-radius: 10px;
-  background-color: red;
-  color: white;
-  font-weight: bold;
+  background-image: url(Img/delete.png);
+  width: 40px;
+  height: 40px;
+  background-size: 25px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: rgb(170, 21, 21);
+  transform: translateX(100%);
+  transition: 0.3s ease;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 #map-container {
@@ -415,7 +459,7 @@ p {
 }
 
 .notification-container {
-  width: 140px;
+  width: 200px;
   position: relative;
   height: 32px;
   transition: 0.3s ease;

@@ -180,6 +180,8 @@ function initializeMap() {
         eJeepData.condition,
         eJeepData.plateNo
       );
+
+      // updateJeepTextContent(eJeepNo, eJeepData.contactNo);
     });
   });
 
@@ -1122,6 +1124,7 @@ function initializeMap() {
   window.addUnit = function () {
     // Get the current data in the "units" database
     const plateNo = document.getElementById("plateNo");
+    const capPlateNo = plateNo.value.toUpperCase();
     if (plateNo.value.trim() == "") {
       alert("Enter the plate number");
       return;
@@ -1152,8 +1155,8 @@ function initializeMap() {
         // Add new unit data under the next available key
         const newUnitRef = child(unitsRef, nextKey);
         set(newUnitRef, {
-          gmail: "",
-          plateNo: plateNo.value,
+          fullName: "",
+          plateNo: capPlateNo,
           status: "Unoccupied",
           condition: "Active",
           contactNo: "",
@@ -1193,7 +1196,7 @@ function initializeMap() {
       unitList.appendChild(unitInfo);
     }
     unitInfo.innerHTML = `
-      <p class="ejeep-number" id="ejeep-no-${eJeepNo}" onmouseover="showJeepBtnCon()" onmouseout="showJeepBtnCon()">E-jeep No: ${eJeepNo}</p>
+      <p class="ejeep-number" id="ejeep-no-${eJeepNo}">E-jeep No: ${eJeepNo}</p>
       <p class="ejeep-${eJeepNo}-driver" id="ejeep-${eJeepNo}-driver">Driver: </p>
       <p class="ejeep-${eJeepNo}-contact" id="ejeep-${eJeepNo}-contact">
         Contact No: ${contactNo}
@@ -1206,14 +1209,14 @@ function initializeMap() {
       </p>
       <p class="ejeep-${eJeepNo}-plateNo" id="ejeep-${eJeepNo}-plateNo">Plate No: ${plateNo}</p>
       <div class="jeep-button-container" id="jeep-no-${eJeepNo}-button-container">
-        <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="deleteUnit('${eJeepNo}')">delete</button>
+        <button class="jeep-deactivate-button" id="jeep-no-${eJeepNo}-deactivate-button" onclick="deactivate('${eJeepNo}', '${condition}')"></button>
+        <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="deleteUnit('${eJeepNo}')"></button>
       </div>
     `;
     let titleNo = document.getElementById(`ejeep-no-${eJeepNo}`);
     const jeepBtnCon = document.getElementById(
       `jeep-no-${eJeepNo}-button-container`
     );
-
     if (status == "Occupied") {
       unitInfo.style.backgroundColor = "#1d692a";
       unitInfo.style.border = "5px solid #10e633";
@@ -1223,8 +1226,24 @@ function initializeMap() {
       unitInfo.style.backgroundColor = "#6b1212";
       unitInfo.style.border = "5px solid red";
       titleNo.style.border = "5px solid red";
+    } else if (condition == "Active") {
+      unitInfo.style.backgroundColor = "#52570e";
+      unitInfo.style.border = "5px solid yellow";
+      titleNo.style.border = "5px solid yellow";
     }
   }
+
+  window.deactivate = function (eJeepNo, condition) {
+    const conditionText = document.getElementById(`ejeep-${eJeepNo}-condition`);
+    const unitsRef = ref(database, `units/${eJeepNo}`);
+    if (condition == "Active") {
+      conditionText.textContent = "Condition: Under Maintenance";
+      update(unitsRef, {condition: "Under Maintenance"});
+    } else if (condition == "Under Maintenance") {
+      conditionText.textContent = "Condition: Active";
+      update(unitsRef, {condition: "Active"});
+    }
+  };
 
   function updateSidebar(deviceId, streetName, speed) {
     const deviceList = document.getElementById("device-list");
@@ -1249,10 +1268,6 @@ function initializeMap() {
     `;
   }
 }
-
-window.showJeepBtnCon = function () {
-  console.log("I'm gay");
-};
 
 window.backButton = function () {
   const unitNoCon = document.querySelector(".unit-number-container");

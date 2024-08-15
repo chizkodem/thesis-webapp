@@ -7,14 +7,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
 import {
   getAuth,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword, // This is for user registration
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-import {
-  getFunctions,
-  httpsCallable,
-} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-functions.js"; // Import httpsCallable
-import {update} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js"; // This can be used for updating data
 
 // Your Firebase configuration
 const firebaseConfig = {
