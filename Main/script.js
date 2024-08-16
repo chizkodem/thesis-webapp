@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
   navbarLinks.forEach(function (link) {
     link.addEventListener("click", handleNavClick);
   });
-  // Show only the 'home-container' initially
   showContent("driver-manager-container");
 });
 

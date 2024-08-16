@@ -348,42 +348,50 @@ document.getElementById("update-button").addEventListener("click", () => {
   const userFullName = document.getElementById("user-name");
   const userPassword = document.getElementById("user-password");
   const userContact = document.getElementById("user-contact");
+  const displayedEmail = document.getElementById(`user-${currentEmail}`);
   let email = userEmail.value;
   let fullName = userFullName.value;
   let contactNo = userContact.value;
 
   if (currentEmail != email) {
-    console.log(currentEmail, email, "test current email");
     changeEmail(currentEmail, email);
+    console.log(currentEmail, email, "test current email");
+    const usersRef = ref(database, "users/" + currentEmail.replace(/\./g, ","));
+    set(usersRef, null);
+    displayedEmail.remove();
+    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+      // Replace '.' to avoid issues
+      fullName: fullName,
+      email: email,
+      contactNo: contactNo,
+    });
+  } else if (userPassword.value.trim() !== "") {
+    changePassword(userEmail.value, userPassword.value);
+    userEmail.value = "";
+    userFullName.value = "";
+    userPassword.value = "";
+    userContact.value = "";
+    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+      // Replace '.' to avoid issues
+      fullName: fullName,
+      email: email,
+      contactNo: contactNo,
+    });
+  } else if (userPassword.value.trim() === "") {
+    set(ref(database, "users/" + email.replace(/\./g, ",")), {
+      // Replace '.' to avoid issues
+      fullName: fullName,
+      email: email,
+      contactNo: contactNo,
+    });
+
+    alert("User Renamed successfully!");
+    userEmail.value = "";
+    userFullName.value = "";
+    userPassword.value = "";
+    userContact.value = "";
+    // location.reload();
   }
-
-  // if (userPassword.value.trim() !== "") {
-  //   changePassword(userEmail.value, userPassword.value);
-  //   userEmail.value = "";
-  //   userFullName.value = "";
-  //   userPassword.value = "";
-  //   userContact.value = "";
-  //   set(ref(database, "users/" + email.replace(/\./g, ",")), {
-  //     // Replace '.' to avoid issues
-  //     fullName: fullName,
-  //     email: email,
-  //     contactNo: contactNo,
-  //   });
-  // } else if (userPassword.value.trim() === "") {
-  //   set(ref(database, "users/" + email.replace(/\./g, ",")), {
-  //     // Replace '.' to avoid issues
-  //     fullName: fullName,
-  //     email: email,
-  //     contactNo: contactNo,
-  //   });
-
-  //   alert("User Renamed successfully!");
-  //   userEmail.value = "";
-  //   userFullName.value = "";
-  //   userPassword.value = "";
-  //   userContact.value = "";
-  //   // location.reload();
-  // }
 });
 
 async function deleteUser(email) {
