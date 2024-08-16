@@ -60,7 +60,7 @@ function gettingUser(email, fullName, contactNo) {
     userInfo.className = "user-info";
     userInfo.id = `user-${email}`;
     userInfo.innerHTML = `
-      <div class="buttons-container">
+      <div class="crud-buttons-container">
         <button class="edit-button"></button>
         <button class="delete-button"></button>
       </div>

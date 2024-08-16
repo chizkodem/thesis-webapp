@@ -166,7 +166,7 @@
   overflow: hidden;
 }
 
-.buttons-container {
+.crud-buttons-container {
   position: absolute;
   width: 100px;
   height: 50px;
@@ -178,12 +178,12 @@
   display: flex;
 }
 
-.buttons-container.reveal {
+.crud-buttons-container.reveal {
   width: 100px;
 }
 
-.buttons-container.reveal .edit-button,
-.buttons-container.reveal .delete-button {
+.crud-buttons-container.reveal .edit-button,
+.crud-buttons-container.reveal .delete-button {
   transform: translateX(0);
 }
 
