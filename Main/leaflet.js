@@ -178,7 +178,8 @@ function initializeMap() {
         eJeepData.contactNo,
         eJeepData.status,
         eJeepData.condition,
-        eJeepData.plateNo
+        eJeepData.plateNo,
+        eJeepData.fullName
       );
 
       // updateJeepTextContent(eJeepNo, eJeepData.contactNo);
@@ -1185,7 +1186,7 @@ function initializeMap() {
     ejeep.remove();
   };
 
-  function getUnit(eJeepNo, contactNo, status, condition, plateNo) {
+  function getUnit(eJeepNo, contactNo, status, condition, plateNo, fullName) {
     const unitList = document.querySelector(".units-list");
     let unitInfo = document.getElementById(`ejeep-${eJeepNo}`);
 
@@ -1197,7 +1198,7 @@ function initializeMap() {
     }
     unitInfo.innerHTML = `
       <p class="ejeep-number" id="ejeep-no-${eJeepNo}">E-jeep No: ${eJeepNo}</p>
-      <p class="ejeep-${eJeepNo}-driver" id="ejeep-${eJeepNo}-driver">Driver: </p>
+      <p class="ejeep-${eJeepNo}-driver" id="ejeep-${eJeepNo}-driver">Driver: ${fullName}</p>
       <p class="ejeep-${eJeepNo}-contact" id="ejeep-${eJeepNo}-contact">
         Contact No: ${contactNo}
       </p>
