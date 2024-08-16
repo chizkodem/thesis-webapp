@@ -92,6 +92,109 @@ p {
   border: solid 8px #020244;
 }
 
+.decommission-warning {
+  top: 0;
+  position: absolute;
+  width: 600px;
+  height: 400px;
+  background-color: rgb(7, 7, 105);
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  z-index: 999;
+  color: #94bbf1;
+  padding: 25px 30px;
+  border-radius: 30px;
+  transition: 0.3s ease;
+  display: none;
+}
+
+.decommission-warning.reveal {
+  display: block;
+  width: 600px;
+  height: 400px;
+  opacity: 1;
+}
+
+.decommission-warning::before {
+  content: "";
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  background-color: rgba(47, 47, 122, 0.4);
+  z-index: -1;
+}
+
+.decommission-container {
+  padding: 10px 30px;
+  border: 1px solid red;
+  gap: 15px;
+  align-items: center;
+  background-color: rgb(255, 0, 0, 0.2);
+  color: #ec928e;
+  display: flex;
+  margin: 25px 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.decommission-no {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #658cc4;
+}
+
+.decommission-ejeep-no {
+  font-size: 1.5rem;
+  color: #94bbf1;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.decommission-delete-button {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: rgb(209, 4, 4);
+  border: none;
+  padding: 15px;
+  border-radius: 13px;
+  cursor: pointer;
+}
+
+.decommission-delete-button:hover {
+  background-color: rgb(134, 0, 0);
+}
+
+.decommission-cancel-button {
+  position: absolute;
+  bottom: 30px;
+  right: 140px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+  border-radius: 13px;
+  color: #658cc4;
+  cursor: pointer;
+}
+
+.decommission-cancel-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.decommission-warning img {
+  width: 50px;
+}
+
 .home-container .content-container h1 {
   position: absolute;
   font-size: 2rem;

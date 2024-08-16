@@ -1175,6 +1175,29 @@ function initializeMap() {
       });
   };
 
+  window.decommisionWarning = function (eJeepNo) {
+    const decomWarnCon = document.querySelector(".decommission-warning");
+    const decomCancelBtn = document.querySelector(
+      ".decommission-cancel-button"
+    );
+    const decomEjeepNo = document.querySelector(".decommission-ejeep-no");
+    decomEjeepNo.textContent = eJeepNo;
+    decomWarnCon.classList.add("reveal");
+    decomCancelBtn.addEventListener("click", () => {
+      decomWarnCon.classList.remove("reveal");
+    });
+  };
+
+  document.addEventListener("click", function (event) {
+    const decomWarnCon = document.querySelector(".decommission-warning");
+    if (
+      event.target.classList.contains("decommission-warning") &&
+      !event.target.classList.contains("jeep-delete-button")
+    ) {
+      decomWarnCon.classList.remove("reveal");
+    }
+  });
+
   window.deleteUnit = function (eJeepNo) {
     const ejeep = document.getElementById(`ejeep-${eJeepNo}`);
 
@@ -1211,7 +1234,7 @@ function initializeMap() {
       <p class="ejeep-${eJeepNo}-plateNo" id="ejeep-${eJeepNo}-plateNo">Plate No: ${plateNo}</p>
       <div class="jeep-button-container" id="jeep-no-${eJeepNo}-button-container">
         <button class="jeep-deactivate-button" id="jeep-no-${eJeepNo}-deactivate-button" onclick="deactivate('${eJeepNo}', '${condition}')"></button>
-        <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="deleteUnit('${eJeepNo}')"></button>
+        <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="decommisionWarning('${eJeepNo}')"></button>
       </div>
     `;
     let titleNo = document.getElementById(`ejeep-no-${eJeepNo}`);
