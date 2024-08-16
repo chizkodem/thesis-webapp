@@ -1180,10 +1180,16 @@ function initializeMap() {
     const decomCancelBtn = document.querySelector(
       ".decommission-cancel-button"
     );
+    const decomDelBtn = document.querySelector(".decommission-delete-button");
     const decomEjeepNo = document.querySelector(".decommission-ejeep-no");
     decomEjeepNo.textContent = eJeepNo;
     decomWarnCon.classList.add("reveal");
     decomCancelBtn.addEventListener("click", () => {
+      decomWarnCon.classList.remove("reveal");
+    });
+
+    decomDelBtn.addEventListener("click", () => {
+      deleteUnit(eJeepNo);
       decomWarnCon.classList.remove("reveal");
     });
   };
@@ -1202,7 +1208,7 @@ function initializeMap() {
     const ejeep = document.getElementById(`ejeep-${eJeepNo}`);
 
     const unitsRef = ref(database, `units/${eJeepNo}`);
-    console.log(unitsRef);
+    // console.log(unitsRef);
 
     set(unitsRef, null);
 
