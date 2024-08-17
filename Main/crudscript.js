@@ -160,7 +160,7 @@ document.addEventListener("click", function (event) {
     const editButton = event.target;
     const buttonCon = editButton
       .closest("li")
-      .querySelector(".buttons-container");
+      .querySelector(".crud-buttons-container");
     const formCon = document.querySelector(".form-container");
     const userName = document.getElementById("user-name");
     const userContact = document.getElementById("user-contact");
@@ -220,7 +220,7 @@ document.addEventListener("click", function (event) {
     const popupButton = event.target;
     const buttonCon = popupButton
       .closest("li")
-      .querySelector(".buttons-container");
+      .querySelector(".crud-buttons-container");
 
     const user = document.getElementById(`user-${popupButton.textContent}`);
     user.classList.toggle("selected");
@@ -272,7 +272,7 @@ document.addEventListener("click", function (event) {
   if (event.target.classList.contains("delete-button")) {
     const warnCon = document.querySelector(".delete-warning");
     const warningDelButton = document.querySelector(".warning-delete-button");
-    const buttonsCon = document.querySelector(".buttons-container.reveal");
+    const buttonsCon = document.querySelector(".crud-buttons-container.reveal");
     const userEmail = buttonsCon.closest("li").querySelector(".popup-button");
     const warningUserEmail = document.querySelector(".warning-user-email");
 
@@ -288,7 +288,7 @@ document.addEventListener("click", function (event) {
     const warnDelBtn = event.target;
     const warnCon = document.querySelector(".delete-warning");
     const userInfo = document.querySelector(".user-info.selected");
-    const buttonsCon = document.querySelector(".buttons-container.reveal");
+    const buttonsCon = document.querySelector(".crud-buttons-container.reveal");
 
     // location.reload();
     userInfo.classList.remove("selected");
@@ -302,7 +302,7 @@ document
   .querySelector(".warning-delete-button")
   .addEventListener("click", () => {
     const warnCon = document.querySelector(".delete-warning");
-    const buttonsCon = document.querySelector(".buttons-container.reveal"); // Corrected the selector with a dot (.)
+    const buttonsCon = document.querySelector(".crud-buttons-container.reveal"); // Corrected the selector with a dot (.)
 
     if (buttonsCon) {
       const userEmail = buttonsCon.closest("li").querySelector(".popup-button");
