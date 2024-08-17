@@ -163,6 +163,8 @@ function initializeMap() {
     }
   );
 
+  let plateNos = {};
+
   onValue(unitsRef, (snapshot) => {
     if (!snapshot.exists()) {
       console.log("No data found in Firebase notifications.");
@@ -172,6 +174,10 @@ function initializeMap() {
     snapshot.forEach((childSnapshot) => {
       const eJeepNo = childSnapshot.key;
       const eJeepData = childSnapshot.val();
+
+      plateNos[eJeepNo] = eJeepData.plateNo;
+
+      console.log(plateNos[eJeepNo], "plate number test");
 
       getUnit(
         eJeepNo,
@@ -276,11 +282,11 @@ function initializeMap() {
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
-          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID}</a>
-          <p>${streetName}</p>
-          <p>${contactNo}</p>
+          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+          <p id="ejeep-no-${notifID}-street"></p>
+          <p id="ejeep-no-${notifID}-contact"></p>
           <div class="notification-container">
-            <p class="notif-button">${message}
+            <p class="notif-button" id="ejeep-no-${notifID}-message">
               <div class="buttons-container">
                 <input type="text" class="reports-text">
                 <button class="verified-button"></button>
@@ -291,6 +297,21 @@ function initializeMap() {
           </div>
         `;
         reportsCon.appendChild(reportInfo);
+
+        const eJeepStreet = document.getElementById(
+          `ejeep-no-${notifID}-street`
+        );
+        const eJeepContact = document.getElementById(
+          `ejeep-no-${notifID}-contact`
+        );
+        const eJeepMessage = document.getElementById(
+          `ejeep-no-${notifID}-message`
+        );
+        eJeepStreet.textContent = streetName;
+        eJeepContact.textContent = contactNo;
+        eJeepMessage.textContent = message;
+
+        removeDuplicateElementsById(`report-${notifID}`);
       } else {
         if (reportInfo) {
           reportsCon.removeChild(reportInfo);
@@ -301,6 +322,16 @@ function initializeMap() {
         }
       }
     });
+  }
+
+  function removeDuplicateElementsById(elementId) {
+    const elements = document.querySelectorAll(`#${elementId}`);
+
+    if (elements.length > 1) {
+      for (let i = 1; i < elements.length; i++) {
+        elements[i].parentNode.removeChild(elements[i]);
+      }
+    }
   }
 
   document.addEventListener("click", function (event) {
@@ -807,7 +838,12 @@ function initializeMap() {
     const historyCon = document.querySelector(".history-list");
     let existingHistoryInfo = document.getElementById(`history-${timestamp}`);
 
-    csvData.push([slicedHistoryId, streetName, sanitizedDate, message]);
+    csvData.push([
+      slicedHistoryId + " - " + plateNos[historyId],
+      streetName,
+      sanitizedDate,
+      message,
+    ]);
 
     if (existingHistoryInfo) {
       // Remove the existing element with the same ID
@@ -820,7 +856,7 @@ function initializeMap() {
     historyInfo.className = "history-info";
     historyInfo.id = `history-${timestamp}`;
     historyInfo.innerHTML = `
-        <p>${slicedHistoryId}</p>
+        <p>${slicedHistoryId} - ${plateNos[historyId]}</p>
         <p>${streetName}</p>
         <p>${dateAndTime}</p>
         <p>${message}</p>
@@ -946,7 +982,7 @@ function initializeMap() {
   });
 
   let csvData = [
-    ["UNIT NO.", "LAST KNOWN LOCATION", "DATE AND TIME", "STATUS"],
+    ["UNIT NO. - PLATE NO.", "LAST KNOWN LOCATION", "DATE AND TIME", "STATUS"],
   ]; // Initialize with headers
 
   // Function to download CSV from collected data

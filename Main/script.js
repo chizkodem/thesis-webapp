@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   navbarLinks.forEach(function (link) {
     link.addEventListener("click", handleNavClick);
   });
-  showContent("units-container");
+  showContent("reports-container");
 });
 
 function signOut() {

@@ -250,7 +250,7 @@ p {
 
 .reports-titles h4,
 .reports-list a {
-  width: 100px;
+  width: 120px;
 }
 
 #download-button {
@@ -297,7 +297,7 @@ p {
 
 .history-titles h4,
 .history-info p:nth-child(1) {
-  max-width: 100px;
+  max-width: 120px;
   width: 100%;
 }
 
