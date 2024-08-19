@@ -263,7 +263,7 @@ function initializeMap() {
     let reportInfo = document.getElementById(`report-${notifID}`);
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
-    reverseGeocode(lat, lon, (error, streetName) => {
+    reverseGeocode(lat, lon, (error, result) => {
       if (
         message === "Driver Pressed" ||
         message === "Passenger Pressed" ||
@@ -271,7 +271,7 @@ function initializeMap() {
       ) {
         notifTab.classList.add("notified");
 
-        streetNames[notifID] = streetName;
+        streetNames[notifID] = result.road;
 
         // If reportInfo already exists, remove it before creating a new one
         if (reportInfo && reportsCon.contains(reportInfo)) {
@@ -290,7 +290,7 @@ function initializeMap() {
               <div class="buttons-container">
                 <input type="text" class="reports-text">
                 <button class="verified-button"></button>
-                <button class="false-alarm" onclick="addHistory('${notifID}', '${streetName}')"></button>
+                <button class="false-alarm" onclick="addHistory('${notifID}', '${result.road}')"></button>
                 <button class="back-button"></button>
                 <button class="send-button"></button>
               </div></p>
@@ -307,7 +307,8 @@ function initializeMap() {
         const eJeepMessage = document.getElementById(
           `ejeep-no-${notifID}-message`
         );
-        eJeepStreet.textContent = streetName;
+        eJeepStreet.textContent =
+          (result.houseNo ? result.houseNo + " " : "") + result.road;
         eJeepContact.textContent = contactNo;
         eJeepMessage.textContent = message;
 
@@ -584,6 +585,12 @@ function initializeMap() {
       return "02 8527 8116";
     } else if (hospitalName == "St. Lukes Medical Center (Extension Clinic)") {
       return "02 8521 0020";
+    } else if (hospitalName == "St. Victoria Hospital") {
+      return "02 8942 2022";
+    } else if (hospitalName == "VT Maternity Hospital") {
+      return "02 8942 6669";
+    } else if (hospitalName == "Amang Rodriguez Memorial Medical Center") {
+      return "02 8941 5854";
     } else {
       return randomContactNumber();
     }
@@ -935,13 +942,18 @@ function initializeMap() {
   }
 
   function reverseGeocode(lat, lon, callback) {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+    const hereApiKey = "LTp06G0O-mdwV-K28losuWcm6ju2C8EPD1LTXUS48Ts"; // Your HERE API key
+    const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${lon}&lang=en-US&apikey=${hereApiKey}`;
 
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        if (data && data.address && data.address.road) {
-          callback(null, data.address.road);
+        if (data && data.items) {
+          const road = data.items[0].address.street;
+          const houseNo = data.items[0].address.houseNumber;
+          console.log(data.items[0].address, "location test");
+
+          callback(null, {road, houseNo});
         } else {
           callback("No street name found");
         }
