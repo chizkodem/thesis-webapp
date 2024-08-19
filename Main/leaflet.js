@@ -1023,7 +1023,7 @@ function initializeMap() {
 
       const popupContent = `
         <b>Device ID:</b> ${deviceId}<br>
-        <b>Street:</b> ${streetName}<br>
+        <b>Street:</b> ${streetName.road}<br>
       `;
 
       if (markers[deviceId]) {
@@ -1035,7 +1035,7 @@ function initializeMap() {
       }
 
       // Update the sidebar with the latest device info
-      updateSidebar(deviceId, streetName, speed);
+      updateSidebar(deviceId, streetName.road, speed);
     });
   }
 
