@@ -951,7 +951,7 @@ function initializeMap() {
         if (data && data.items) {
           const road = data.items[0].address.street;
           const houseNo = data.items[0].address.houseNumber;
-          console.log(data.items[0].address, "location test");
+          // console.log(data.items[0].address, "location test");
 
           callback(null, {road, houseNo});
         } else {
