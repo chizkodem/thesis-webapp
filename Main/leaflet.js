@@ -177,7 +177,7 @@ function initializeMap() {
 
       plateNos[eJeepNo] = eJeepData.plateNo;
 
-      console.log(plateNos[eJeepNo], "plate number test");
+      // console.log(plateNos[eJeepNo], "plate number test");
 
       getUnit(
         eJeepNo,
@@ -282,7 +282,7 @@ function initializeMap() {
         reportInfo.className = "report-info";
         reportInfo.id = `report-${notifID}`;
         reportInfo.innerHTML = `
-          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
           <p id="ejeep-no-${notifID}-street"></p>
           <p id="ejeep-no-${notifID}-contact"></p>
           <div class="notification-container">
@@ -399,249 +399,15 @@ function initializeMap() {
         const cctv = document.getElementById("footage");
         cctv.src = youtubeLink;
         cctv.style.display = "block";
-
-        // console.log(cctv.src, "test link");
-
-        // console.log(youtubeLink, "test link");
       });
     } catch (error) {
       console.error("Error fetching notifications from Firebase:", error);
     }
   }
 
-  window.nearestHospital = function (deviceId, lat, lon) {
-    clearPreviousHospitals();
-    getCctv(deviceId);
-    var radius = 5000; // Fixed radius
-    var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lon});out;`;
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API Response:", data); // Debugging line to see raw API response
-
-        const hospitals = data.elements.filter(
-          (element) => element.lat && element.lon
-        );
-
-        if (hospitals.length < 5) {
-          // If fewer than 5 hospitals, increase the search radius
-          increaseSearchRadius(deviceId, lat, lon, hospitals);
-          console.log("test hospitalLKAJSDLKJAS");
-        } else {
-          // Show hospitals with custom icon
-          hospitals.slice(0, 5).forEach((element) => {
-            console.log(element.tags.name, "test ASLKD");
-
-            L.marker([element.lat, element.lon], {
-              icon: L.icon({
-                iconUrl: "img/hospital.png", // Replace with your custom hospital icon URL
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32],
-              }),
-            })
-              .addTo(map)
-              .bindPopup(element.tags.name || "Hospital");
-          });
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  };
-
-  function increaseSearchRadius(deviceId, lat, lng, currentHospitals) {
-    var radius = 5000; // Initial radius
-    var increment = 1000; // Radius increment
-    const contactsCon = document.querySelector(".contacts-list");
-    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    clearPins();
-
-    function searchMoreHospitals() {
-      radius += increment;
-      var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=hospital](around:${radius},${lat},${lng});out;`;
-
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Expanded API Response:", data); // Debugging line to see expanded API response
-
-          const newHospitals = data.elements.filter(
-            (element) => element.lat && element.lon
-          );
-          const allHospitals = [...currentHospitals, ...newHospitals];
-
-          if (allHospitals.length < 5) {
-            searchMoreHospitals();
-          } else {
-            allHospitals.slice(0, 5).forEach((element) => {
-              // console.log(contactNumber(), "test numberalsdkjaslkdj");
-
-              if (!element.tags.name) {
-                console.log("walang pangalan");
-              } else if (element.tags.name) {
-                contactsInfo = document.createElement("li");
-                contactsInfo.className = "contacts-info";
-                contactsInfo.id = `contacts-${deviceId}`;
-                contactsInfo.innerHTML = `
-                <h3 href="#">${element.tags.name}</h3>
-                <p>${contactNumber()}</p>
-                `;
-                contactsCon.appendChild(contactsInfo);
-              }
-
-              var marker = L.marker([element.lat, element.lon], {
-                icon: L.icon({
-                  iconUrl: "img/hospital.png",
-                  iconSize: [32, 32],
-                  iconAnchor: [16, 32],
-                  popupAnchor: [0, -32],
-                }),
-              })
-                .addTo(map)
-                .bindPopup(element.tags.name || "Hospital");
-
-              hospitalMarkers.push(marker);
-              // console.log(markers, "test ALKSJLKSAJD");
-            });
-          }
-        })
-        .catch((error) => console.error("Error:", error));
-    }
-
-    searchMoreHospitals();
-  }
-
-  var hospitalMarkers = [];
-  var policeMarkers = [];
-  var fireStationMarkers = [];
-
-  window.clearPins = function () {
-    if (hospitalMarkers.length != 0) {
-      hospitalMarkers.forEach((marker) => {
-        map.removeLayer(marker);
-      });
-      hospitalMarkers = []; // Clear the markers array
-      policeMarkers.forEach((marker) => {
-        map.removeLayer(marker);
-      });
-      policeMarkers = [];
-      fireStationMarkers.forEach((marker) => {
-        map.removeLayer(marker);
-      });
-      fireStationMarkers = [];
-
-      console.log("test PINS REMOVED");
-    }
-  };
-
   function clearPreviousStations() {
     const contactsCon = document.querySelector(".police-contacts-list");
     contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
-  }
-
-  window.nearestStation = function (deviceId, lat, lon) {
-    clearPreviousStations(); // Ensure you have a function to clear previous police stations
-
-    var radius = 5000; // Fixed radius
-    var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=police](around:${radius},${lat},${lon});out;`;
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("API Response:", data); // Debugging line to see raw API response
-
-        const stations = data.elements.filter(
-          (element) => element.lat && element.lon
-        );
-
-        if (stations.length < 5) {
-          // If fewer than 5 stations, increase the search radius
-          policeIncreaseSearchRadius(deviceId, lat, lon, stations);
-          // console.log("test policeALSKJLSAKJ");
-        } else if (stations.length > 5) {
-          policeIncreaseSearchRadius(deviceId, lat, lon, stations);
-          // console.log("test policeALSKJLSAKJ");
-        } else {
-          // Show stations with custom icon
-          stations.slice(0, 5).forEach((element) => {
-            L.marker([element.lat, element.lon], {
-              icon: L.icon({
-                iconUrl: "img/police.png", // Replace with your custom police station icon URL
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32],
-              }),
-            })
-              .addTo(map)
-              .bindPopup(element.tags.name || "Police Station");
-            console.log("test policeALSKJLSAKJ");
-          });
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  };
-
-  function policeIncreaseSearchRadius(deviceId, lat, lng, currentStations) {
-    var radius = 5000; // Initial radius
-    var increment = 1000; // Radius increment
-    const policeContactsCon = document.querySelector(".police-contacts-list");
-    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    clearPins();
-
-    console.log("test STATIONSALSKDLSAKJD");
-
-    function searchMoreStations() {
-      radius += increment;
-      var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=police](around:${radius},${lat},${lng});out;`;
-
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Expanded API Response:", data); // Debugging line to see expanded API response
-
-          const newStations = data.elements.filter(
-            (element) => element.lat && element.lon
-          );
-          const allStations = [...currentStations, ...newStations];
-
-          if (allStations.length < 5) {
-            searchMoreStations();
-          } else {
-            allStations.slice(0, 5).forEach((element) => {
-              if (!element.tags.name) {
-                console.log("No name");
-              } else if (element.tags.name) {
-                contactsInfo = document.createElement("li");
-                contactsInfo.className = "contacts-info";
-                contactsInfo.id = `contacts-${deviceId}`;
-                contactsInfo.innerHTML = `
-                <h3 href="#">${element.tags.name}</h3>
-                <p>${contactNumber()}</p>
-                `;
-                policeContactsCon.appendChild(contactsInfo);
-              }
-
-              var marker = L.marker([element.lat, element.lon], {
-                icon: L.icon({
-                  iconUrl: "img/police.png", // Replace with your custom police station icon URL
-                  iconSize: [32, 32],
-                  iconAnchor: [16, 32],
-                  popupAnchor: [0, -32],
-                }),
-              })
-                .addTo(map)
-                .bindPopup(element.tags.name || "Police Station");
-
-              policeMarkers.push(marker);
-              // console.log(markers, "test ALKSJLKSAJD");
-              // console.log(element.tags.name, "test ASLKD");
-            });
-          }
-        })
-        .catch((error) => console.error("Error:", error));
-    }
-
-    searchMoreStations();
   }
 
   function clearPreviousFireStations() {
@@ -649,139 +415,193 @@ function initializeMap() {
     contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
   }
 
-  window.nearestFireStation = function (deviceId, lat, lon) {
-    clearPreviousFireStations();
+  // Initialize a global layer group to hold markers
+  const markersLayer = L.layerGroup().addTo(map);
 
-    var radius = 5000; // Fixed radius
-    var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=fire_station](around:${radius},${lat},${lon});out;`;
+  window.nearestHospital = function (deviceId, lat, lon) {
+    getCctv(deviceId);
+    const ContactsCon = document.querySelector(".contacts-list");
+    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+    const mapboxToken =
+      "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
+
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/hospital.json?proximity=${lon},${lat}&limit=5&access_token=${mapboxToken}`;
 
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log("API Response:", data); // Debugging line to see raw API response
+        // Clear existing markers
+        markersLayer.clearLayers();
 
-        const fireStations = data.elements.filter(
-          (element) => element.lat && element.lon
-        );
+        if (data.features && data.features.length > 0) {
+          data.features.forEach((hospital, index) => {
+            const [lon, lat] = hospital.geometry.coordinates;
 
-        console.log(fireStations, "test firestation");
-
-        if (fireStations.length < 5) {
-          // If fewer than 5 fire stations, increase the search radius
-          fireIncreaseSearchRadius(deviceId, lat, lon, fireStations);
-          addID();
-        } else if (fireStations.length > 5) {
-          fireIncreaseSearchRadius(deviceId, lat, lon, fireStations);
-          addID();
-        } else {
-          // Show fire stations with custom icon
-          fireStations.slice(0, 5).forEach((element) => {
-            console.log(element.tags.name, "test ASLKD");
-
-            L.marker([element.lat, element.lon], {
+            // Creating a marker with the hospital icon
+            const marker = L.marker([lat, lon], {
               icon: L.icon({
-                iconUrl: "img/fire.png", // Replace with your custom fire station icon URL
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32],
+                iconUrl: "img/hospital.png", // Path to your hospital icon
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
               }),
-            })
-              .addTo(map)
-              .bindPopup(element.tags.name || "Fire Station")
-              .on("add", function () {
-                const marker = this;
-                setTimeout(function () {
-                  const iconElement = marker._icon;
-                  if (iconElement) {
-                    iconElement.id = "fire-icon";
-                  }
-                }, 0);
-              });
+            }).bindPopup(`<b>${hospital.text}</b><br>${hospital.place_name}`); // Add popup with hospital name and address
+
+            marker.addTo(markersLayer); // Add marker to the layer group
+            contactsInfo = document.createElement("li");
+            contactsInfo.className = "contacts-info";
+            contactsInfo.id = `contacts-${deviceId}`;
+            contactsInfo.innerHTML = `
+            <h3 href="#">${hospital.text}</h3>
+            <p>${hospitalContactNumber(hospital.text)}</p>
+            `;
+            ContactsCon.appendChild(contactsInfo);
           });
+        } else {
+          console.log("No hospitals found nearby.");
         }
       })
       .catch((error) => console.error("Error:", error));
   };
 
-  function addID() {
-    setTimeout(() => {
-      document
-        .querySelectorAll(".leaflet-marker-icon")
-        .forEach((icon, index) => {
-          if (icon.src.includes("fire.png")) {
-            icon.id = `fire-icon`;
-            console.log("test add ID TO ICON FIRE");
-          } else if (icon.src.includes("police.png")) {
-            icon.id = `police-icon`;
-            console.log("test add ID TO ICON POLICE");
-          } else if (icon.src.includes("hospital.png")) {
-            icon.id = `hospital-icon`;
-            console.log("test add ID TO ICON HOSPITAL");
-          }
-        });
-    }, 2000);
-  }
-
-  function fireIncreaseSearchRadius(deviceId, lat, lng, currentStations) {
-    var radius = 5000; // Initial radius
-    var increment = 1000; // Radius increment
-    const contactsCon = document.querySelector(".fire-contacts-list");
+  window.nearestPoliceStation = function (deviceId, lat, lon) {
+    getCctv(deviceId);
+    const policeContactsCon = document.querySelector(".police-contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    clearPins();
+    const mapboxToken =
+      "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
 
-    function searchMoreStations() {
-      radius += increment;
-      var url = `https://overpass-api.de/api/interpreter?data=[out:json];node[amenity=fire_station](around:${radius},${lat},${lng});out;`;
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/police.json?proximity=${lon},${lat}&limit=5&access_token=${mapboxToken}`;
 
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Expanded API Response:", data); // Debugging line to see expanded API response
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // Clear existing markers
 
-          const newStations = data.elements.filter(
-            (element) => element.lat && element.lon
-          );
-          const allStations = [...currentStations, ...newStations];
+        if (data.features && data.features.length > 0) {
+          data.features.forEach((policeStation, index) => {
+            const [lon, lat] = policeStation.geometry.coordinates;
 
-          if (allStations.length < 5) {
-            searchMoreStations();
-          } else {
-            allStations.slice(0, 5).forEach((element) => {
-              if (!element.tags.name) {
-                console.log("No name available");
-              } else if (element.tags.name) {
-                contactsInfo = document.createElement("li");
-                contactsInfo.className = "contacts-info";
-                contactsInfo.id = `contacts-${deviceId}`;
-                contactsInfo.innerHTML = `
-                <h3 href="#">${element.tags.name}</h3>
-                <p>${contactNumber()}</p>
-                `;
-                contactsCon.appendChild(contactsInfo);
-              }
+            // Creating a marker with the police station icon
+            const marker = L.marker([lat, lon], {
+              icon: L.icon({
+                iconUrl: "img/police.png", // Path to your police station icon
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+              }),
+            }).bindPopup(
+              `<b>${policeStation.text}</b><br>${policeStation.place_name}`
+            ); // Add popup with police station name and address
 
-              var marker = L.marker([element.lat, element.lon], {
-                icon: L.icon({
-                  iconUrl: "img/fire.png",
-                  iconSize: [32, 32],
-                  iconAnchor: [16, 32],
-                  popupAnchor: [0, -32],
-                }),
-              })
-                .addTo(map)
-                .bindPopup(element.tags.name || "Fire Station");
+            marker.addTo(markersLayer); // Add marker to the layer group
+            contactsInfo = document.createElement("li");
+            contactsInfo.className = "contacts-info";
+            contactsInfo.id = `contacts-${deviceId}`;
+            contactsInfo.innerHTML = `
+            <h3 href="#">${policeStation.text}</h3>
+            <p>${policeContactNumber(policeStation.text)}</p>
+            `;
+            policeContactsCon.appendChild(contactsInfo);
+          });
+        } else {
+          console.log("No police stations found nearby.");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  };
 
-              fireStationMarkers.push(marker);
-            });
-          }
-        })
-        .catch((error) => console.error("Error:", error));
+  window.nearestFireStation = function (deviceId, lat, lon) {
+    getCctv(deviceId);
+    const fireContactsCon = document.querySelector(".fire-contacts-list");
+    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+    const mapboxToken =
+      "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
+
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/fire_station.json?proximity=${lon},${lat}&limit=5&access_token=${mapboxToken}`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        // Clear existing markers
+
+        if (data.features && data.features.length > 0) {
+          data.features.forEach((fireStation, index) => {
+            const [lon, lat] = fireStation.geometry.coordinates;
+
+            // Creating a marker with the fire station icon
+            const marker = L.marker([lat, lon], {
+              icon: L.icon({
+                iconUrl: "img/fire.png", // Path to your fire station icon
+                iconSize: [32, 32], // Size of the icon
+                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+              }),
+            }).bindPopup(
+              `<b>${fireStation.text}</b><br>${fireStation.place_name}`
+            ); // Add popup with fire station name and address
+
+            marker.addTo(markersLayer); // Add marker to the layer group
+            contactsInfo = document.createElement("li");
+            contactsInfo.className = "contacts-info";
+            contactsInfo.id = `contacts-${deviceId}`;
+            contactsInfo.innerHTML = `
+            <h3 href="#">${fireStation.text}</h3>
+            <p>${randomContactNumber()}</p>
+            `;
+            fireContactsCon.appendChild(contactsInfo);
+          });
+        } else {
+          console.log("No fire stations found nearby.");
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
+  // Function to remove all markers
+  window.clearMarkers = function () {
+    markersLayer.clearLayers();
+  };
+
+  // Example usage:
+  // Call nearHospital() to add markers
+  // Call clearMarkers() to remove all markers
+
+  // function contactNumber(hospitalName) {
+  //   const sanitizedHospitalName = hospitalName.replace(" ", "");
+  //   const hospitals = {MotherRegina: "02-6412922"};
+  //   console.log(sanitizedHospitalName, "hospital test");
+  // }
+
+  function hospitalContactNumber(hospitalName) {
+    if (hospitalName == "University of Santo Tomas Hospital") {
+      return "02 8731 3001";
+    } else if (hospitalName == "Perpetual Succor Hospital & Maternity Inc.") {
+      return "02 8731 1631";
+    } else if (hospitalName == "De Ocampo Memorial Medical Center") {
+      return "02 8715 1891";
+    } else if (hospitalName == "AMOSUP Seamen's Hospital") {
+      return "02 8527 8116";
+    } else if (hospitalName == "St. Lukes Medical Center (Extension Clinic)") {
+      return "02 8521 0020";
+    } else {
+      return randomContactNumber();
     }
-
-    searchMoreStations();
   }
 
-  function contactNumber() {
+  function policeContactNumber(policeName) {
+    if (policeName == "Manila Police District") {
+      return "02 8806 5686";
+    } else if (policeName == "Jose Abad Santos PS") {
+      return "02 8252 8450";
+    } else if (policeName == "Manila District Traffic Enforcement Unit") {
+      return "0977 714 5263";
+    } else {
+      return randomContactNumber();
+    }
+  }
+
+  function randomContactNumber() {
     let temporaryNumber = [
       "0912 345 6781",
       "0918 234 5679",
@@ -793,16 +613,16 @@ function initializeMap() {
       "0927 890 1238",
       "0928 901 2346",
       "0929 012 3457",
-      "02 234 5678",
-      "02 345 6789",
-      "02 456 7891",
-      "02 567 8902",
-      "02 678 9013",
-      "02 234 5678",
-      "02 345 6781",
-      "02 456 7892",
-      "02 567 8903",
-      "02 678 9014",
+      "02 5389 5678",
+      "02 2189 6789",
+      "02 2389 7891",
+      "02 3490 8902",
+      "02 2348 9013",
+      "02 5678 5678",
+      "02 5619 6781",
+      "02 8291 7892",
+      "02 8923 8903",
+      "02 8712 9014",
     ];
 
     function shuffle(array) {
@@ -1131,8 +951,57 @@ function initializeMap() {
       });
   }
 
+  window.fourSquareGeocode = function () {
+    const apiKey = "fsq3VpF0Sz6Bq8cMHmZO67pAq6EpFCeqAT9iyLiPG9/teR0=";
+    const latLong = "14.6434113,121.1031168"; // Your latitude and longitude
+
+    fetch(
+      `https://api.foursquare.com/v3/places/search?query=hospital&ll=${latLong}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: apiKey,
+          Accept: "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        const hospitals = data.results;
+        hospitals.forEach((hospital) => {
+          const placeId = hospital.fsq_id;
+
+          // Fetch detailed information for each hospital
+          fetch(`https://api.foursquare.com/v3/places/${placeId}`, {
+            method: "GET",
+            headers: {
+              Authorization: apiKey,
+              Accept: "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((details) => {
+              console.log(`Name: ${details.name}`);
+              console.log(
+                `Phone: ${details.tel ? details.tel : "Not available"}`
+              );
+              console.log("---");
+            })
+            .catch((error) =>
+              console.error(
+                `Error fetching details for ${hospital.name}:`,
+                error
+              )
+            );
+        });
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
   function updateMarker(deviceId, lat, lon, speed) {
     // console.log(collision, "test collision");
+
+    console.log(deviceId, lat, lon, "test geo loc");
 
     reverseGeocode(lat, lon, (error, streetName) => {
       if (error) {

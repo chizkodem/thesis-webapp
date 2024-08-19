@@ -290,7 +290,6 @@ document.addEventListener("click", function (event) {
     const userInfo = document.querySelector(".user-info.selected");
     const buttonsCon = document.querySelector(".crud-buttons-container.reveal");
 
-    // location.reload();
     userInfo.classList.remove("selected");
     buttonsCon.classList.remove("reveal");
     warnDelBtn.classList.remove("reveal");
