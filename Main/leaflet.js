@@ -1092,6 +1092,112 @@ function initializeMap() {
       });
   };
 
+  window.generateQr = function () {
+    const plateNo = document.getElementById("plateNo").value.trim(); // Trim whitespace from the input value
+
+    if (plateNo === "") {
+      alert("Please enter a plate number.");
+      return;
+    }
+
+    // Create a new window
+    const printWindow = window.open("", "_blank", "width=800,height=800");
+
+    // Write a basic HTML structure to the new window
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Print QR Code</title>
+            <style>
+                body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                }
+            </style>
+        </head>
+        <body>
+            <canvas id="printQrCanvas"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+            <script>
+                const canvas = document.getElementById('printQrCanvas');
+                const scaleFactor = 3; // Scale factor for the QR code
+
+                // Set canvas size before generating the QR code
+                canvas.width = 256 * scaleFactor;
+                canvas.height = 256 * scaleFactor;
+
+                // Generate the QR code
+                QRCode.toCanvas(canvas, '${plateNo}', { width: canvas.width }, function (error) {
+                    if (error) {
+                        console.error("Error generating QR code:", error);
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    `);
+
+    // Close the document stream to render the content
+    printWindow.document.close();
+  };
+
+  window.showQrCode = function (plateNumber) {
+    let plateNo = plateNumber.trim(); // Trim whitespace from the input value
+
+    if (plateNo === "") {
+      alert("Please enter a plate number.");
+      return;
+    }
+
+    // Create a new window
+    const printWindow = window.open("", "_blank", "width=800,height=800");
+
+    // Write a basic HTML structure to the new window
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Print QR Code</title>
+            <style>
+                body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                }
+            </style>
+        </head>
+        <body>
+            <canvas id="printQrCanvas"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+            <script>
+                const canvas = document.getElementById('printQrCanvas');
+                const scaleFactor = 3; // Scale factor for the QR code
+
+                // Set canvas size before generating the QR code
+                canvas.width = 256 * scaleFactor;
+                canvas.height = 256 * scaleFactor;
+
+                // Generate the QR code
+                QRCode.toCanvas(canvas, '${plateNo}', { width: canvas.width }, function (error) {
+                    if (error) {
+                        console.error("Error generating QR code:", error);
+                    }
+                });
+            </script>
+        </body>
+        </html>
+    `);
+
+    // Close the document stream to render the content
+    printWindow.document.close();
+  };
+
   window.decommisionWarning = function (eJeepNo) {
     const decomWarnCon = document.querySelector(".decommission-warning");
     const decomCancelBtn = document.querySelector(
@@ -1154,7 +1260,7 @@ function initializeMap() {
       <p class="ejeep-${eJeepNo}-condition" id="ejeep-${eJeepNo}-condition">
         Condition: ${condition}
       </p>
-      <p class="ejeep-${eJeepNo}-plateNo" id="ejeep-${eJeepNo}-plateNo">Plate No: ${plateNo}</p>
+      <p class="ejeep-plateNo" id="ejeep-${eJeepNo}-plateNo" onclick="showQrCode('${plateNo}')">Plate No: ${plateNo}</p>
       <div class="jeep-button-container" id="jeep-no-${eJeepNo}-button-container">
         <button class="jeep-deactivate-button" id="jeep-no-${eJeepNo}-deactivate-button" onclick="deactivate('${eJeepNo}', '${condition}')"></button>
         <button class="jeep-delete-button" id="jeep-no-${eJeepNo}-delete-button" onclick="decommisionWarning('${eJeepNo}')"></button>

@@ -149,7 +149,7 @@
         <div class="content-container">
           <div class="add-unit-container">
             <input type="text" id="plateNo" />
-            <button onclick="addUnit()">add a unit</button>
+            <button onclick="addUnit(), generateQr()">add a unit</button>
           </div>
           <div class="units-list"></div>
         </div>
@@ -325,6 +325,9 @@
       </div>
     </div>
 
+    <div id="qrcode"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script type="module" src="leaflet.js" defer></script>
     <script type="module" src="script.js"></script>
