@@ -263,66 +263,72 @@ function initializeMap() {
     let reportInfo = document.getElementById(`report-${notifID}`);
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
-    reverseGeocode(lat, lon, (error, result) => {
-      if (
-        message === "Driver Pressed" ||
-        message === "Passenger Pressed" ||
-        message === "Possible Collision"
-      ) {
-        notifTab.classList.add("notified");
+    if (
+      message === "Driver Pressed" ||
+      message === "Passenger Pressed" ||
+      message === "Possible Collision"
+    ) {
+      reverseGeocode(lat, lon, (error, result) => {
+        if (
+          message === "Driver Pressed" ||
+          message === "Passenger Pressed" ||
+          message === "Possible Collision"
+        ) {
+          notifTab.classList.add("notified");
 
-        streetNames[notifID] = result.road;
+          streetNames[notifID] = result.road;
 
-        // If reportInfo already exists, remove it before creating a new one
-        if (reportInfo && reportsCon.contains(reportInfo)) {
-          reportsCon.removeChild(reportInfo);
+          // If reportInfo already exists, remove it before creating a new one
+          if (reportInfo && reportsCon.contains(reportInfo)) {
+            reportsCon.removeChild(reportInfo);
+          }
+
+          reportInfo = document.createElement("li");
+          reportInfo.className = "report-info";
+          reportInfo.id = `report-${notifID}`;
+          reportInfo.innerHTML = `
+            <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+            <p id="ejeep-no-${notifID}-street"></p>
+            <p id="ejeep-no-${notifID}-contact"></p>
+            <div class="notification-container">
+              <p class="notif-button" id="ejeep-no-${notifID}-message">
+                <div class="buttons-container">
+                  <input type="text" class="reports-text">
+                  <button class="verified-button"></button>
+                  <button class="false-alarm" onclick="addHistory('${notifID}', '${result.road}')"></button>
+                  <button class="back-button"></button>
+                  <button class="send-button"></button>
+                </div></p>
+            </div>
+          `;
+          reportsCon.appendChild(reportInfo);
+
+          const eJeepStreet = document.getElementById(
+            `ejeep-no-${notifID}-street`
+          );
+          const eJeepContact = document.getElementById(
+            `ejeep-no-${notifID}-contact`
+          );
+          const eJeepMessage = document.getElementById(
+            `ejeep-no-${notifID}-message`
+          );
+          eJeepStreet.textContent =
+            (result.houseNo ? result.houseNo + " " : "") + result.road;
+          eJeepContact.textContent = contactNo;
+          eJeepMessage.textContent = message;
+
+          removeDuplicateElementsById(`report-${notifID}`);
+        } else {
+          if (reportInfo) {
+            reportsCon.removeChild(reportInfo);
+          }
+          const remainingReports = reportsCon.querySelectorAll(".report-info");
+          if (remainingReports.length === 0) {
+            notifTab.classList.remove("notified");
+          }
         }
-
-        reportInfo = document.createElement("li");
-        reportInfo.className = "report-info";
-        reportInfo.id = `report-${notifID}`;
-        reportInfo.innerHTML = `
-          <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
-          <p id="ejeep-no-${notifID}-street"></p>
-          <p id="ejeep-no-${notifID}-contact"></p>
-          <div class="notification-container">
-            <p class="notif-button" id="ejeep-no-${notifID}-message">
-              <div class="buttons-container">
-                <input type="text" class="reports-text">
-                <button class="verified-button"></button>
-                <button class="false-alarm" onclick="addHistory('${notifID}', '${result.road}')"></button>
-                <button class="back-button"></button>
-                <button class="send-button"></button>
-              </div></p>
-          </div>
-        `;
-        reportsCon.appendChild(reportInfo);
-
-        const eJeepStreet = document.getElementById(
-          `ejeep-no-${notifID}-street`
-        );
-        const eJeepContact = document.getElementById(
-          `ejeep-no-${notifID}-contact`
-        );
-        const eJeepMessage = document.getElementById(
-          `ejeep-no-${notifID}-message`
-        );
-        eJeepStreet.textContent =
-          (result.houseNo ? result.houseNo + " " : "") + result.road;
-        eJeepContact.textContent = contactNo;
-        eJeepMessage.textContent = message;
-
-        removeDuplicateElementsById(`report-${notifID}`);
-      } else {
-        if (reportInfo) {
-          reportsCon.removeChild(reportInfo);
-        }
-        const remainingReports = reportsCon.querySelectorAll(".report-info");
-        if (remainingReports.length === 0) {
-          notifTab.classList.remove("notified");
-        }
-      }
-    });
+      });
+    }
   }
 
   function removeDuplicateElementsById(elementId) {
@@ -372,12 +378,6 @@ function initializeMap() {
       });
   };
 
-  function clearPreviousHospitals() {
-    const contactsCon = document.querySelector(".contacts-list");
-    // Remove all contacts with the given deviceId
-    contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
-  }
-
   async function getCctv(deviceID) {
     console.log(deviceID, "testing cctv id");
 
@@ -406,20 +406,24 @@ function initializeMap() {
     }
   }
 
-  function clearPreviousStations() {
-    const contactsCon = document.querySelector(".police-contacts-list");
+  function clearPreviousContacts() {
+    const contactsCon = document.querySelector(".contacts-list");
     contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
-  }
-
-  function clearPreviousFireStations() {
-    const contactsCon = document.querySelector(".fire-contacts-list");
-    contactsCon.querySelectorAll(`.contacts-info`).forEach((el) => el.remove());
+    const fireContactsCon = document.querySelector(".fire-contacts-list");
+    fireContactsCon
+      .querySelectorAll(`.contacts-info`)
+      .forEach((el) => el.remove());
+    const policeContactsCon = document.querySelector(".police-contacts-list");
+    policeContactsCon
+      .querySelectorAll(`.contacts-info`)
+      .forEach((el) => el.remove());
   }
 
   // Initialize a global layer group to hold markers
   const markersLayer = L.layerGroup().addTo(map);
 
   window.nearestHospital = function (deviceId, lat, lon) {
+    clearPreviousContacts();
     getCctv(deviceId);
     const ContactsCon = document.querySelector(".contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
@@ -702,10 +706,9 @@ function initializeMap() {
   };
 
   window.falseAlarm = function (notifID) {
-    clearPreviousStations();
-    clearPreviousFireStations();
-    clearPreviousHospitals();
-    clearPins();
+    clearPreviousContacts();
+    markersLayer.clearLayers();
+
     const notifRef = ref(database, `notifications/${notifID}`);
     const collisionsRef = ref(database, `collisionInstance/${notifID}`);
     update(collisionsRef, {collision: false});
@@ -860,11 +863,8 @@ function initializeMap() {
 
   // Function to clear notification
   window.clearNotif = function (deviceID, message) {
-    // Reference to your Firebase database path for notifications
-    clearPreviousStations();
-    clearPreviousFireStations();
-    clearPreviousHospitals();
-    clearPins();
+    clearPreviousContacts();
+    markersLayer.clearLayers();
 
     let timestamp = Date.now();
     let date = new Date(Number(timestamp)); // Ensure the timestamp is a number
@@ -951,7 +951,7 @@ function initializeMap() {
         if (data && data.items) {
           const road = data.items[0].address.street;
           const houseNo = data.items[0].address.houseNumber;
-          // console.log(data.items[0].address, "location test");
+          console.log(data.items[0].address, "location test");
 
           callback(null, {road, houseNo});
         } else {
@@ -963,53 +963,6 @@ function initializeMap() {
       });
   }
 
-  window.fourSquareGeocode = function () {
-    const apiKey = "fsq3VpF0Sz6Bq8cMHmZO67pAq6EpFCeqAT9iyLiPG9/teR0=";
-    const latLong = "14.6434113,121.1031168"; // Your latitude and longitude
-
-    fetch(
-      `https://api.foursquare.com/v3/places/search?query=hospital&ll=${latLong}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: apiKey,
-          Accept: "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const hospitals = data.results;
-        hospitals.forEach((hospital) => {
-          const placeId = hospital.fsq_id;
-
-          // Fetch detailed information for each hospital
-          fetch(`https://api.foursquare.com/v3/places/${placeId}`, {
-            method: "GET",
-            headers: {
-              Authorization: apiKey,
-              Accept: "application/json",
-            },
-          })
-            .then((response) => response.json())
-            .then((details) => {
-              console.log(`Name: ${details.name}`);
-              console.log(
-                `Phone: ${details.tel ? details.tel : "Not available"}`
-              );
-              console.log("---");
-            })
-            .catch((error) =>
-              console.error(
-                `Error fetching details for ${hospital.name}:`,
-                error
-              )
-            );
-        });
-      })
-      .catch((error) => console.error("Error:", error));
-  };
-
   function updateMarker(deviceId, lat, lon, speed) {
     // console.log(collision, "test collision");
 
@@ -1020,6 +973,8 @@ function initializeMap() {
         console.error("Error reverse geocoding:", error);
         streetName = `Lat: ${lat}, Lon: ${lon}`;
       }
+
+      console.log("is it this one?");
 
       const popupContent = `
         <b>Device ID:</b> ${deviceId}<br>
@@ -1096,7 +1051,6 @@ function initializeMap() {
     const plateNo = document.getElementById("plateNo").value.trim(); // Trim whitespace from the input value
 
     if (plateNo === "") {
-      alert("Please enter a plate number.");
       return;
     }
 
@@ -1120,21 +1074,17 @@ function initializeMap() {
             </style>
         </head>
         <body>
-            <canvas id="printQrCanvas"></canvas>
-            <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+            <div id="qrcode"></div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
             <script>
-                const canvas = document.getElementById('printQrCanvas');
-                const scaleFactor = 3; // Scale factor for the QR code
-
-                // Set canvas size before generating the QR code
-                canvas.width = 256 * scaleFactor;
-                canvas.height = 256 * scaleFactor;
-
-                // Generate the QR code
-                QRCode.toCanvas(canvas, '${plateNo}', { width: canvas.width }, function (error) {
-                    if (error) {
-                        console.error("Error generating QR code:", error);
-                    }
+                $(document).ready(function () {
+                    // Generate the QR code
+                    $('#qrcode').qrcode({
+                        text: '${plateNo}',
+                        width: 256 * 3, // Set the size of the QR code (300% of 256)
+                        height: 256 * 3
+                    });
                 });
             </script>
         </body>
@@ -1173,21 +1123,17 @@ function initializeMap() {
             </style>
         </head>
         <body>
-            <canvas id="printQrCanvas"></canvas>
-            <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+            <div id="qrcode"></div>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
             <script>
-                const canvas = document.getElementById('printQrCanvas');
-                const scaleFactor = 3; // Scale factor for the QR code
-
-                // Set canvas size before generating the QR code
-                canvas.width = 256 * scaleFactor;
-                canvas.height = 256 * scaleFactor;
-
-                // Generate the QR code
-                QRCode.toCanvas(canvas, '${plateNo}', { width: canvas.width }, function (error) {
-                    if (error) {
-                        console.error("Error generating QR code:", error);
-                    }
+                $(document).ready(function () {
+                    // Generate the QR code
+                    $('#qrcode').qrcode({
+                        text: '${plateNo}',
+                        width: 256 * 3, // Set the size of the QR code (300% of 256)
+                        height: 256 * 3
+                    });
                 });
             </script>
         </body>

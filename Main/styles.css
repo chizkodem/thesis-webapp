@@ -401,6 +401,8 @@ p {
 
 .ejeep-plateNo {
   cursor: pointer;
+  text-decoration: underline;
+  color: rgb(13, 13, 141);
 }
 
 .jeep-button-container {

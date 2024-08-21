@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Handle navigation and content switching
   const contentDivs = document.querySelectorAll(".content > div");
   const navbarLinks = document.querySelectorAll(".navbar .nav-link");
-  const logoLink = document.querySelector(".logo");
 
   function showContent(selectedContent) {
     contentDivs.forEach(function (div) {
@@ -42,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
   navbarLinks.forEach(function (link) {
     link.addEventListener("click", handleNavClick);
   });
-  showContent("units-container");
+  showContent("dashboard-container");
 });
 
 function signOut() {
