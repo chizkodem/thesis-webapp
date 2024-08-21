@@ -336,7 +336,10 @@ p {
   overflow: auto;
 }
 
-.add-unit-container {
+.add-unit-and-color-identifier-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
   margin-bottom: 20px;
 }
 
@@ -358,11 +361,38 @@ p {
 
 .units-list {
   width: 100%;
-  /* height: 100%; */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 20px;
-  /* background-color: red; */
+}
+
+.color-identifier-container ul {
+  display: flex;
+}
+
+.color-identifier-container ul li::marker {
+  font-size: 2rem;
+}
+
+.color-identifier-container ul li {
+  list-style: disc;
+  margin-left: 50px;
+  text-indent: -10px;
+}
+
+.color-identifier-container ul li p {
+}
+
+.color-identifier-container ul li:nth-child(1) {
+  color: rgb(0, 255, 0);
+}
+
+.color-identifier-container ul li:nth-child(2) {
+  color: rgb(251, 255, 0);
+}
+
+.color-identifier-container ul li:nth-child(3) {
+  color: rgb(255, 0, 0);
 }
 
 .ejeep-container {

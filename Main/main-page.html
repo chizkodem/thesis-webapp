@@ -147,9 +147,24 @@
           <h2>Units</h2>
         </div>
         <div class="content-container">
-          <div class="add-unit-container">
-            <input type="text" id="plateNo" />
-            <button onclick="addUnit(), generateQr()">add a unit</button>
+          <div class="add-unit-and-color-identifier-container">
+            <div class="add-unit-container">
+              <input type="text" id="plateNo" />
+              <button onclick="addUnit(), generateQr()">add a unit</button>
+            </div>
+            <div class="color-identifier-container">
+              <ul>
+                <li>
+                  <p>Occupied</p>
+                </li>
+                <li>
+                  <p>Unoccupied</p>
+                </li>
+                <li>
+                  <p>Under Maintenance</p>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="units-list"></div>
         </div>
