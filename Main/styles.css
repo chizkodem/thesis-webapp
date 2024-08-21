@@ -368,19 +368,23 @@ p {
 
 .color-identifier-container ul {
   display: flex;
+  gap: 20px;
 }
 
-.color-identifier-container ul li::marker {
-  font-size: 2rem;
+.color-identifier-container ul li::before {
+  content: "•"; /* Custom bullet */
+  font-size: 1rem; /* Increase the size */
+  /* position: absolute; */
+  left: 0;
+  top: 0.2em; /* Adjust vertical position */
+  transform: scale(300%);
 }
 
 .color-identifier-container ul li {
-  list-style: disc;
-  margin-left: 50px;
-  text-indent: -10px;
-}
-
-.color-identifier-container ul li p {
+  /* list-style: disc; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .color-identifier-container ul li:nth-child(1) {
