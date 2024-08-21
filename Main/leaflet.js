@@ -328,6 +328,14 @@ function initializeMap() {
           }
         }
       });
+    } else {
+      if (reportInfo) {
+        reportsCon.removeChild(reportInfo);
+      }
+      const remainingReports = reportsCon.querySelectorAll(".report-info");
+      if (remainingReports.length === 0) {
+        notifTab.classList.remove("notified");
+      }
     }
   }
 
