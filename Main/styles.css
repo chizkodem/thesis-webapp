@@ -483,6 +483,52 @@ p {
   height: 100%;
   display: flex;
   gap: 10px;
+  position: relative;
+}
+
+#map-btn-container {
+  display: flex;
+  position: absolute;
+  gap: 5px;
+  /* background-color: red; */
+  z-index: 999;
+  top: 10px;
+  left: 70px;
+}
+
+#map-btn-container button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+#hospital-button {
+  background-image: url(Img/hospitalbtn.png);
+  background-size: 48px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#police-button {
+  background-image: url(Img/policebtn.png);
+  background-size: 48px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#fire-button {
+  background-image: url(Img/firebtn.png);
+  background-size: 48px;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#show-all-button {
+  background-image: url(Img/allbtn.png);
+  background-size: 35px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 #sidebar {
@@ -996,6 +1042,7 @@ p {
   width: 100%;
   height: 100%;
   position: absolute;
+  overflow: auto;
 }
 
 .stations-container .active .contacts-container ul {
@@ -1072,7 +1119,6 @@ p {
 .fire-contacts-list li {
   display: flex;
   justify-content: space-around;
-  text-align: end;
   font-size: 0.9rem;
   margin-bottom: 5px;
   /* background-color: red; */

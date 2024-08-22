@@ -53,6 +53,9 @@ function initializeMap() {
   const historyRef = ref(database, "history");
   const collisionsRef = ref(database, "collisionInstance");
   const unitsRef = ref(database, "units");
+  const policeRef = ref(database, "policeStation");
+  const fireRef = ref(database, "fireStation");
+  const hospitalRef = ref(database, "hospitalStation");
   // Listen for location updates from devices
 
   let deviceSpeeds = {};
@@ -263,6 +266,8 @@ function initializeMap() {
     let reportInfo = document.getElementById(`report-${notifID}`);
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
+    // console.log(notifID, lat, lon, "ito ba yon?");
+
     if (
       message === "Driver Pressed" ||
       message === "Passenger Pressed" ||
@@ -287,7 +292,7 @@ function initializeMap() {
           reportInfo.className = "report-info";
           reportInfo.id = `report-${notifID}`;
           reportInfo.innerHTML = `
-            <a href="#" id="toggleLink" onclick="nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+            <a href="#" id="toggleLink" onclick="getCctv('${notifID}'),createBtn('${notifID}', ${lat}, ${lon}), nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
             <p id="ejeep-no-${notifID}-street"></p>
             <p id="ejeep-no-${notifID}-contact"></p>
             <div class="notification-container">
@@ -339,6 +344,65 @@ function initializeMap() {
     }
   }
 
+  window.createBtn = function (id, lat, lon) {
+    // Container for buttons
+    const mapBtnContainer = document.getElementById("map-btn-container");
+    const hospitalButton = document.getElementById("hospital-button");
+    const policeButton = document.getElementById("police-button");
+    const fireButton = document.getElementById("fire-button");
+    const showAllButton = document.getElementById("show-all-button");
+
+    if (hospitalButton) {
+      mapBtnContainer.removeChild(hospitalButton);
+      mapBtnContainer.removeChild(policeButton);
+      mapBtnContainer.removeChild(fireButton);
+      mapBtnContainer.removeChild(showAllButton);
+    }
+
+    if (mapBtnContainer) {
+      // Create Hospital button
+      const hospitalButton = document.createElement("button");
+      hospitalButton.id = "hospital-button";
+      hospitalButton.onclick = function () {
+        nearestHospital(id, lat, lon);
+      };
+
+      // Create Police button
+      const policeButton = document.createElement("button");
+      policeButton.id = "police-button";
+      policeButton.onclick = function () {
+        clearMarkers();
+        nearestPoliceStation(id, lat, lon);
+      };
+
+      // Create Fire button
+      const fireButton = document.createElement("button");
+      fireButton.id = "fire-button";
+      fireButton.onclick = function () {
+        clearMarkers();
+        nearestFireStation(id, lat, lon);
+      };
+
+      // Create Show All button
+      const showAllButton = document.createElement("button");
+      showAllButton.id = "show-all-button";
+      showAllButton.onclick = function () {
+        clearMarkers();
+        nearestHospital(id, lat, lon);
+        nearestPoliceStation(id, lat, lon);
+        nearestFireStation(id, lat, lon);
+      };
+
+      // Append buttons to container
+      mapBtnContainer.appendChild(hospitalButton);
+      mapBtnContainer.appendChild(policeButton);
+      mapBtnContainer.appendChild(fireButton);
+      mapBtnContainer.appendChild(showAllButton);
+    } else {
+      console.error('Element with id "map-btn-container" not found.');
+    }
+  };
+
   function removeDuplicateElementsById(elementId) {
     const elements = document.querySelectorAll(`#${elementId}`);
 
@@ -386,7 +450,7 @@ function initializeMap() {
       });
   };
 
-  async function getCctv(deviceID) {
+  window.getCctv = async function (deviceID) {
     console.log(deviceID, "testing cctv id");
 
     try {
@@ -412,7 +476,7 @@ function initializeMap() {
     } catch (error) {
       console.error("Error fetching notifications from Firebase:", error);
     }
-  }
+  };
 
   function clearPreviousContacts() {
     const contactsCon = document.querySelector(".contacts-list");
@@ -430,11 +494,18 @@ function initializeMap() {
   // Initialize a global layer group to hold markers
   const markersLayer = L.layerGroup().addTo(map);
 
+  const registeredLocation = {
+    "Mary Chiles General Hospital": {
+      latitude: 14.60336242595793,
+      longitude: 120.98976099659825,
+    },
+  };
+
   window.nearestHospital = function (deviceId, lat, lon) {
     clearPreviousContacts();
-    getCctv(deviceId);
     const ContactsCon = document.querySelector(".contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+    const radius = 3000;
     const mapboxToken =
       "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
 
@@ -442,7 +513,7 @@ function initializeMap() {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         // Clear existing markers
         markersLayer.clearLayers();
 
@@ -473,14 +544,79 @@ function initializeMap() {
         } else {
           console.log("No hospitals found nearby.");
         }
+
+        const snapshot = await get(hospitalRef);
+
+        if (!snapshot.exists()) {
+          console.log("No data found in Firebase notifications.");
+          return;
+        }
+
+        snapshot.forEach((childSnapshot) => {
+          const locName = childSnapshot.key;
+          const data = childSnapshot.val();
+
+          const distance = getDistanceFromLatLonInMeters(
+            lat,
+            lon,
+            data.latitude,
+            data.longitude
+          );
+
+          console.log(locName);
+
+          if (distance <= radius) {
+            const marker = L.marker([data.latitude, data.longitude], {
+              icon: L.icon({
+                iconUrl: "img/hospital.png", // Path to your hospital icon
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32],
+              }),
+            }).bindPopup(
+              `<b>${locName}</b><br>Custom Location (${(
+                distance / 1000
+              ).toFixed(2)} km away)`
+            );
+
+            marker.addTo(markersLayer);
+            contactsInfo = document.createElement("li");
+            contactsInfo.className = "contacts-info";
+            contactsInfo.id = `contacts-${deviceId}`;
+            contactsInfo.innerHTML = `
+            <h3 href="#">${locName}</h3>
+            <p>${data.contactNo}</p>
+            `;
+            ContactsCon.appendChild(contactsInfo);
+          }
+        });
       })
       .catch((error) => console.error("Error:", error));
   };
 
+  function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+    const R = 6371000; // Radius of the Earth in meters
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in meters
+    return distance;
+  }
+
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
+
   window.nearestPoliceStation = function (deviceId, lat, lon) {
-    getCctv(deviceId);
     const policeContactsCon = document.querySelector(".police-contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+    const radius = 3000;
     const mapboxToken =
       "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
 
@@ -488,7 +624,7 @@ function initializeMap() {
 
     fetch(url)
       .then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         // Clear existing markers
 
         if (data.features && data.features.length > 0) {
@@ -520,71 +656,112 @@ function initializeMap() {
         } else {
           console.log("No police stations found nearby.");
         }
-      })
-      .catch((error) => console.error("Error:", error));
-  };
 
-  window.nearestFireStation = function (deviceId, lat, lon) {
-    getCctv(deviceId);
-    const fireContactsCon = document.querySelector(".fire-contacts-list");
-    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    const mapboxToken =
-      "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
+        const snapshot = await get(policeRef);
 
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/fire_station.json?proximity=${lon},${lat}&limit=5&access_token=${mapboxToken}`;
+        if (!snapshot.exists()) {
+          console.log("No data found in Firebase notifications.");
+          return;
+        }
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        // Clear existing markers
+        snapshot.forEach((childSnapshot) => {
+          const locName = childSnapshot.key;
+          const data = childSnapshot.val();
 
-        if (data.features && data.features.length > 0) {
-          data.features.forEach((fireStation, index) => {
-            const [lon, lat] = fireStation.geometry.coordinates;
+          const distance = getDistanceFromLatLonInMeters(
+            lat,
+            lon,
+            data.latitude,
+            data.longitude
+          );
 
-            // Creating a marker with the fire station icon
-            const marker = L.marker([lat, lon], {
+          console.log(locName);
+
+          if (distance <= radius) {
+            const marker = L.marker([data.latitude, data.longitude], {
               icon: L.icon({
-                iconUrl: "img/fire.png", // Path to your fire station icon
-                iconSize: [32, 32], // Size of the icon
-                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+                iconUrl: "img/police.png", // Path to your hospital icon
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32],
               }),
             }).bindPopup(
-              `<b>${fireStation.text}</b><br>${fireStation.place_name}`
-            ); // Add popup with fire station name and address
+              `<b>${locName}</b><br>Custom Location (${(
+                distance / 1000
+              ).toFixed(2)} km away)`
+            );
 
-            marker.addTo(markersLayer); // Add marker to the layer group
+            marker.addTo(markersLayer);
             contactsInfo = document.createElement("li");
             contactsInfo.className = "contacts-info";
             contactsInfo.id = `contacts-${deviceId}`;
             contactsInfo.innerHTML = `
-            <h3 href="#">${fireStation.text}</h3>
-            <p>${randomContactNumber()}</p>
+            <h3 href="#">${locName}</h3>
+            <p>${data.contactNo}</p>
             `;
-            fireContactsCon.appendChild(contactsInfo);
-          });
-        } else {
-          console.log("No fire stations found nearby.");
-        }
+            policeContactsCon.appendChild(contactsInfo);
+          }
+        });
       })
       .catch((error) => console.error("Error:", error));
+  };
+
+  window.nearestFireStation = async function (deviceId, lat, lon) {
+    const fireContactsCon = document.querySelector(".fire-contacts-list");
+    let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
+    const radius = 3000;
+
+    const snapshot = await get(fireRef);
+
+    if (!snapshot.exists()) {
+      console.log("No data found in Firebase notifications.");
+      return;
+    }
+
+    snapshot.forEach((childSnapshot) => {
+      const locName = childSnapshot.key;
+      const data = childSnapshot.val();
+
+      // console.log(locName);
+
+      const distance = getDistanceFromLatLonInMeters(
+        lat,
+        lon,
+        data.latitude,
+        data.longitude
+      );
+
+      if (distance <= radius) {
+        const marker = L.marker([data.latitude, data.longitude], {
+          icon: L.icon({
+            iconUrl: "img/fire.png", // Path to your hospital icon
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32],
+          }),
+        }).bindPopup(
+          `<b>${locName}</b><br>Custom Location (${(distance / 1000).toFixed(
+            2
+          )} km away)`
+        );
+
+        marker.addTo(markersLayer);
+        contactsInfo = document.createElement("li");
+        contactsInfo.className = "contacts-info";
+        contactsInfo.id = `contacts-${deviceId}`;
+        contactsInfo.innerHTML = `
+        <h3 href="#">${locName}</h3>
+        <p>${data.contactNo}</p>
+        `;
+        fireContactsCon.appendChild(contactsInfo);
+      }
+    });
   };
 
   // Function to remove all markers
   window.clearMarkers = function () {
     markersLayer.clearLayers();
   };
-
-  // Example usage:
-  // Call nearHospital() to add markers
-  // Call clearMarkers() to remove all markers
-
-  // function contactNumber(hospitalName) {
-  //   const sanitizedHospitalName = hospitalName.replace(" ", "");
-  //   const hospitals = {MotherRegina: "02-6412922"};
-  //   console.log(sanitizedHospitalName, "hospital test");
-  // }
 
   function hospitalContactNumber(hospitalName) {
     if (hospitalName == "University of Santo Tomas Hospital") {
@@ -714,6 +891,18 @@ function initializeMap() {
   };
 
   window.falseAlarm = function (notifID) {
+    const mapBtnContainer = document.getElementById("map-btn-container");
+    const hospitalButton = document.getElementById("hospital-button");
+    const policeButton = document.getElementById("police-button");
+    const fireButton = document.getElementById("fire-button");
+    const showAllButton = document.getElementById("show-all-button");
+
+    if (hospitalButton) {
+      mapBtnContainer.removeChild(hospitalButton);
+      mapBtnContainer.removeChild(policeButton);
+      mapBtnContainer.removeChild(fireButton);
+      mapBtnContainer.removeChild(showAllButton);
+    }
     clearPreviousContacts();
     markersLayer.clearLayers();
 
@@ -871,6 +1060,18 @@ function initializeMap() {
 
   // Function to clear notification
   window.clearNotif = function (deviceID, message) {
+    const mapBtnContainer = document.getElementById("map-btn-container");
+    const hospitalButton = document.getElementById("hospital-button");
+    const policeButton = document.getElementById("police-button");
+    const fireButton = document.getElementById("fire-button");
+    const showAllButton = document.getElementById("show-all-button");
+
+    if (hospitalButton) {
+      mapBtnContainer.removeChild(hospitalButton);
+      mapBtnContainer.removeChild(policeButton);
+      mapBtnContainer.removeChild(fireButton);
+      mapBtnContainer.removeChild(showAllButton);
+    }
     clearPreviousContacts();
     markersLayer.clearLayers();
 
@@ -950,7 +1151,7 @@ function initializeMap() {
   }
 
   function reverseGeocode(lat, lon, callback) {
-    const hereApiKey = "LTp06G0O-mdwV-K28losuWcm6ju2C8EPD1LTXUS48Ts"; // Your HERE API key
+    const hereApiKey = "WVsmU6LHwzh_fENX0NL-tqjpMtt4RvhsGSvsSxBSU9w"; // Your HERE API key
     const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${lon}&lang=en-US&apikey=${hereApiKey}`;
 
     fetch(url)
@@ -959,7 +1160,7 @@ function initializeMap() {
         if (data && data.items) {
           const road = data.items[0].address.street;
           const houseNo = data.items[0].address.houseNumber;
-          console.log(data.items[0].address, "location test");
+          // console.log(data.items[0].address, "location test");
 
           callback(null, {road, houseNo});
         } else {
@@ -972,17 +1173,13 @@ function initializeMap() {
   }
 
   function updateMarker(deviceId, lat, lon, speed) {
-    // console.log(collision, "test collision");
-
-    console.log(deviceId, lat, lon, "test geo loc");
-
     reverseGeocode(lat, lon, (error, streetName) => {
       if (error) {
         console.error("Error reverse geocoding:", error);
         streetName = `Lat: ${lat}, Lon: ${lon}`;
       }
 
-      console.log("is it this one?");
+      // console.log(deviceId, "is it this one?");
 
       const popupContent = `
         <b>Device ID:</b> ${deviceId}<br>
