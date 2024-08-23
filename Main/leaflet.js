@@ -494,6 +494,8 @@ function initializeMap() {
   // Initialize a global layer group to hold markers
   const markersLayer = L.layerGroup().addTo(map);
 
+  console.log(markersLayer, "markers test");
+
   const registeredLocation = {
     "Mary Chiles General Hospital": {
       latitude: 14.60336242595793,

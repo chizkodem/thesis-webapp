@@ -444,6 +444,9 @@ async function changePassword(email, newPassword) {
 }
 
 async function changeEmail(currentEmail, newEmail) {
+  const userEmail = document.getElementById("user-email");
+  const userFullName = document.getElementById("user-name");
+  const userContact = document.getElementById("user-contact");
   try {
     const response = await fetch(
       "https://mob-crud-server.glitch.me/changeEmail",
@@ -463,6 +466,9 @@ async function changeEmail(currentEmail, newEmail) {
     const data = await response.text();
     console.log(data); // Log success message
     alert("Email Changed successfully!");
+    userEmail.value = "";
+    userFullName.value = "";
+    userContact.value = "";
   } catch (error) {
     console.error("Error changing email:", error);
   }
