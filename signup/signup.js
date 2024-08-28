@@ -94,7 +94,11 @@ async function signUpUser(email, password, fullName) {
     email: email,
   });
 
-  return userCredential.user;
+  return {
+    uid: uid,
+    email: email,
+    fullName: fullName,
+  };
 }
 
 async function checkIfEmailExists(email) {
@@ -110,9 +114,11 @@ async function checkIfEmailExists(email) {
 }
 
 function saveCurrentUserToSessionStorage(user) {
+  console.log("User object before saving:", user); // Debugging log
   const userJSON = JSON.stringify({
     uid: user.uid,
     email: user.email,
+    fullName: user.fullName,
   });
   sessionStorage.setItem("currentUser", userJSON);
   console.log("User data saved to session storage:", user);

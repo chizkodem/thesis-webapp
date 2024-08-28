@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (storedUserJSON) {
     const storedUser = JSON.parse(storedUserJSON);
+    console.log("Retrieved user from session storage:", storedUser); // Debugging log
 
     // Check if fullName is available
     if (storedUser && storedUser.fullName) {
