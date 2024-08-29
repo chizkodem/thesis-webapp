@@ -137,7 +137,7 @@ function initializeMap() {
     }
   );
 
-  let youtubeLink;
+  let youtubeLink = {};
   onValue(
     youtubeRef,
     (snapshot) => {
@@ -154,11 +154,12 @@ function initializeMap() {
         const notifId = childSnapshot.key;
         const notifData = childSnapshot.val();
 
-        // console.log(notifData.link);
+        // console.log(notifData.stream);
+        // console.log(notifId);
 
-        youtubeLink = notifData.link;
+        youtubeLink[notifId] = notifData.stream;
 
-        // console.log(youtubeLink, "laskdjlaksdj test");
+        console.log(youtubeLink, "laskdjlaksdj test");
       });
     },
     (error) => {
@@ -267,6 +268,12 @@ function initializeMap() {
     let slicedNotifID = notifID.slice(-4).toUpperCase();
 
     // console.log(notifID, lat, lon, "ito ba yon?");
+    const remainingReports = reportsCon.querySelectorAll(".report-info");
+
+    if (remainingReports.length === 0) {
+      notifTab.classList.remove("notified");
+      // console.log(remainingReports, "rem report test again");
+    }
 
     if (
       message === "Driver Pressed" ||
@@ -281,6 +288,7 @@ function initializeMap() {
         ) {
           notifTab.classList.add("notified");
 
+          console.log(notifID, "rem report test again");
           streetNames[notifID] = result.road;
 
           // If reportInfo already exists, remove it before creating a new one
@@ -292,7 +300,7 @@ function initializeMap() {
           reportInfo.className = "report-info";
           reportInfo.id = `report-${notifID}`;
           reportInfo.innerHTML = `
-            <a href="#" id="toggleLink" onclick="getCctv('${notifID}'),createBtn('${notifID}', ${lat}, ${lon}), nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+            <a href="#" id="toggleLink" onclick="getCctv(),createBtn('${notifID}', ${lat}, ${lon}), nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
             <p id="ejeep-no-${notifID}-street"></p>
             <p id="ejeep-no-${notifID}-contact"></p>
             <div class="notification-container">
@@ -326,10 +334,6 @@ function initializeMap() {
         } else {
           if (reportInfo) {
             reportsCon.removeChild(reportInfo);
-          }
-          const remainingReports = reportsCon.querySelectorAll(".report-info");
-          if (remainingReports.length === 0) {
-            notifTab.classList.remove("notified");
           }
         }
       });
@@ -421,6 +425,7 @@ function initializeMap() {
     if (link) {
       if (!link.contains(event.target) && !iframe.contains(event.target)) {
         iframe.style.display = "none"; // Hide the iframe
+        iframe.src = "";
       }
     }
   });
@@ -450,32 +455,15 @@ function initializeMap() {
       });
   };
 
-  window.getCctv = async function (deviceID) {
-    console.log(deviceID, "testing cctv id");
+  window.getCctv = async function () {
+    // console.log(deviceID, "testing cctv id");
 
-    try {
-      // Fetch the data snapshot
-      const snapshot = await get(youtubeRef);
+    const deviceID = "01";
 
-      if (!snapshot.exists()) {
-        console.log("No data found in Firebase notifications.");
-        return;
-      }
+    const cctv = document.getElementById("footage");
 
-      // Handle each notification
-      snapshot.forEach((childSnapshot) => {
-        const notifId = childSnapshot.key;
-        const notifData = childSnapshot.val();
-
-        const youtubeLink = notifData.link;
-
-        const cctv = document.getElementById("footage");
-        cctv.src = youtubeLink;
-        cctv.style.display = "block";
-      });
-    } catch (error) {
-      console.error("Error fetching notifications from Firebase:", error);
-    }
+    cctv.src = youtubeLink[deviceID];
+    cctv.style.display = "block";
   };
 
   function clearPreviousContacts() {
@@ -565,7 +553,7 @@ function initializeMap() {
             data.longitude
           );
 
-          console.log(locName);
+          // console.log(locName);
 
           if (distance <= radius) {
             const marker = L.marker([data.latitude, data.longitude], {
@@ -677,7 +665,7 @@ function initializeMap() {
             data.longitude
           );
 
-          console.log(locName);
+          // console.log(locName);
 
           if (distance <= radius) {
             const marker = L.marker([data.latitude, data.longitude], {
@@ -1153,7 +1141,7 @@ function initializeMap() {
   }
 
   function reverseGeocode(lat, lon, callback) {
-    const hereApiKey = "WVsmU6LHwzh_fENX0NL-tqjpMtt4RvhsGSvsSxBSU9w"; // Your HERE API key
+    const hereApiKey = "1VEQacjSKYgKxGdPDC7UctuMtEW-Ev5Fzs9QXo9RIIA"; // Your HERE API key
     const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${lon}&lang=en-US&apikey=${hereApiKey}`;
 
     fetch(url)
@@ -1289,8 +1277,8 @@ function initializeMap() {
                     // Generate the QR code
                     $('#qrcode').qrcode({
                         text: '${plateNo}',
-                        width: 256 * 3, // Set the size of the QR code (300% of 256)
-                        height: 256 * 3
+                        width: 256 * 2, // Set the size of the QR code (300% of 256)
+                        height: 256 * 2
                     });
                 });
             </script>
