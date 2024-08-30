@@ -353,6 +353,7 @@ function initializeMap() {
 
     getCctv();
     createBtn(notifID, lat, lon);
+    callAllStationFunction(notifID, lat, lon);
   };
 
   window.callAllStationFunction = function (notifID, lat, lon) {
@@ -530,7 +531,11 @@ function initializeMap() {
                 iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
                 popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
               }),
-            }).bindPopup(`<b>${hospital.text}</b><br>${hospital.place_name}`); // Add popup with hospital name and address
+            }).bindPopup(
+              `<b>${hospital.text}</b><br>${
+                hospital.place_name
+              }<br>${hospitalContactNumber(hospital.text)}`
+            ); // Add popup with hospital name and address
 
             marker.addTo(markersLayer); // Add marker to the layer group
             contactsInfo = document.createElement("li");
@@ -557,6 +562,8 @@ function initializeMap() {
           const locName = childSnapshot.key;
           const data = childSnapshot.val();
 
+          console.log(data, "test Data");
+
           const distance = getDistanceFromLatLonInMeters(
             lat,
             lon,
@@ -577,7 +584,7 @@ function initializeMap() {
             }).bindPopup(
               `<b>${locName}</b><br>Custom Location (${(
                 distance / 1000
-              ).toFixed(2)} km away)`
+              ).toFixed(2)} km away)<br>${data.contactNo}`
             );
 
             marker.addTo(markersLayer);
@@ -641,7 +648,9 @@ function initializeMap() {
                 popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
               }),
             }).bindPopup(
-              `<b>${policeStation.text}</b><br>${policeStation.place_name}`
+              `<b>${policeStation.text}</b><br>${
+                policeStation.place_name
+              }<br>${policeContactNumber(policeStation.text)}`
             ); // Add popup with police station name and address
 
             marker.addTo(markersLayer); // Add marker to the layer group
@@ -689,7 +698,7 @@ function initializeMap() {
             }).bindPopup(
               `<b>${locName}</b><br>Custom Location (${(
                 distance / 1000
-              ).toFixed(2)} km away)`
+              ).toFixed(2)} km away)<br>${data.contactNo}`
             );
 
             marker.addTo(markersLayer);
@@ -743,7 +752,7 @@ function initializeMap() {
         }).bindPopup(
           `<b>${locName}</b><br>Custom Location (${(distance / 1000).toFixed(
             2
-          )} km away)`
+          )} km away)<br>${data.contactNo}`
         );
 
         marker.addTo(markersLayer);
@@ -1264,54 +1273,6 @@ function initializeMap() {
       });
   };
 
-  window.generateQr = function () {
-    const plateNo = document.getElementById("plateNo").value.trim(); // Trim whitespace from the input value
-
-    if (plateNo === "") {
-      return;
-    }
-
-    // Create a new window
-    const printWindow = window.open("", "_blank", "width=800,height=800");
-
-    // Write a basic HTML structure to the new window
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Print QR Code</title>
-            <style>
-                body {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100vh;
-                    margin: 0;
-                    font-family: Arial, sans-serif;
-                }
-            </style>
-        </head>
-        <body>
-            <div id="qrcode"></div>
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
-            <script>
-                $(document).ready(function () {
-                    // Generate the QR code
-                    $('#qrcode').qrcode({
-                        text: '${plateNo}',
-                        width: 256 * 2, // Set the size of the QR code (300% of 256)
-                        height: 256 * 2
-                    });
-                });
-            </script>
-        </body>
-        </html>
-    `);
-
-    // Close the document stream to render the content
-    printWindow.document.close();
-  };
-
   window.showQrCode = function (plateNumber) {
     let plateNo = plateNumber.trim(); // Trim whitespace from the input value
 
@@ -1348,8 +1309,8 @@ function initializeMap() {
                     // Generate the QR code
                     $('#qrcode').qrcode({
                         text: '${plateNo}',
-                        width: 256 * 3, // Set the size of the QR code (300% of 256)
-                        height: 256 * 3
+                        width: 256 * 2, // Set the size of the QR code (300% of 256)
+                        height: 256 * 2
                     });
                 });
             </script>
