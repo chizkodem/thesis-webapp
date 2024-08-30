@@ -300,7 +300,7 @@ function initializeMap() {
           reportInfo.className = "report-info";
           reportInfo.id = `report-${notifID}`;
           reportInfo.innerHTML = `
-            <a href="#" id="toggleLink" onclick="getCctv(),createBtn('${notifID}', ${lat}, ${lon}), nearestHospital('${notifID}', ${lat}, ${lon}), nearestPoliceStation('${notifID}', ${lat}, ${lon}), nearestFireStation('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
+            <a href="#" id="toggleLink" onclick="handleNotificationClick('${notifID}', ${lat}, ${lon})">${slicedNotifID} - ${plateNos[notifID]}</a>
             <p id="ejeep-no-${notifID}-street"></p>
             <p id="ejeep-no-${notifID}-contact"></p>
             <div class="notification-container">
@@ -347,6 +347,19 @@ function initializeMap() {
       }
     }
   }
+
+  window.handleNotificationClick = function (notifID, lat, lon) {
+    console.log("test button");
+
+    getCctv();
+    createBtn(notifID, lat, lon);
+  };
+
+  window.callAllStationFunction = function (notifID, lat, lon) {
+    nearestHospital(notifID, lat, lon);
+    nearestPoliceStation(notifID, lat, lon);
+    nearestFireStation(notifID, lat, lon);
+  };
 
   window.createBtn = function (id, lat, lon) {
     // Container for buttons
@@ -456,8 +469,6 @@ function initializeMap() {
   };
 
   window.getCctv = async function () {
-    // console.log(deviceID, "testing cctv id");
-
     const deviceID = "01";
 
     const cctv = document.getElementById("footage");
@@ -1140,26 +1151,37 @@ function initializeMap() {
       });
   }
 
-  function reverseGeocode(lat, lon, callback) {
-    const hereApiKey = "1VEQacjSKYgKxGdPDC7UctuMtEW-Ev5Fzs9QXo9RIIA"; // Your HERE API key
-    const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${lon}&lang=en-US&apikey=${hereApiKey}`;
+  async function reverseGeocode(lat, lon, callback) {
+    const apiRef = ref(database, "Apis");
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data && data.items) {
-          const road = data.items[0].address.street;
-          const houseNo = data.items[0].address.houseNumber;
-          // console.log(data.items[0].address, "location test");
+    const snapshot = await get(apiRef);
 
-          callback(null, {road, houseNo});
-        } else {
-          callback("No street name found");
-        }
-      })
-      .catch((error) => {
-        callback(error);
-      });
+    snapshot.forEach((childSnapshot) => {
+      const apiID = childSnapshot.key;
+      const apiData = childSnapshot.val();
+
+      const hereApiKey = apiData; // Your HERE API key
+      const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?at=${lat},${lon}&lang=en-US&apikey=${hereApiKey}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data.items) {
+            const road = data.items[0].address.street;
+            const houseNo = data.items[0].address.houseNumber;
+            // console.log(data.items[0].address, "location test");
+
+            callback(null, {road, houseNo});
+          } else {
+            callback("No street name found");
+          }
+        })
+        .catch((error) => {
+          callback(error);
+        });
+    });
+
+    // console.log(data, "test DATA sdfasdf");
   }
 
   function updateMarker(deviceId, lat, lon, speed) {

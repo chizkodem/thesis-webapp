@@ -65,7 +65,7 @@ document.getElementById("submit").addEventListener("click", async function (e) {
 
     alert("Sign up successful!");
 
-    window.location.href = "/Main/main-page.html";
+    window.location.href = "/index.html";
 
     // Clear input boxes after successful sign-up
     document.getElementById("name").value = "";

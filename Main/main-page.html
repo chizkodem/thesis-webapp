@@ -56,14 +56,14 @@
 
       <nav class="navbar">
         <ul>
+          <li class="selected units-button">
+            <i class="bx bx-map"></i>
+            <a href="#" class="nav-link">Dashboard</a>
+          </li>
           <li class="selected rep">
             <div class="notif"></div>
             <i class="bx bxs-megaphone"></i>
             <a href="#" class="nav-link">Reports</a>
-          </li>
-          <li class="selected units-button">
-            <i class="bx bx-map"></i>
-            <a href="#" class="nav-link">Dashboard</a>
           </li>
           <li class="selected units-button">
             <i class="bx bx-bus"></i>
@@ -105,7 +105,6 @@
             width="320"
             height="240"
             frameborder="0"
-            style="display: block"
           ></iframe>
           <ul class="reports-list">
             <li class="reports-titles">
@@ -141,7 +140,7 @@
         <div class="content-container">
           <div class="add-unit-and-color-identifier-container">
             <div class="add-unit-container">
-              <input type="text" id="plateNo" />
+              <input type="text" id="plateNo" placeholder="Plate Number" />
               <button onclick="addUnit(), generateQr()">add a unit</button>
             </div>
             <div class="color-identifier-container">

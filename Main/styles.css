@@ -255,6 +255,10 @@ p {
   width: 120px;
 }
 
+.reports-list a {
+  text-decoration: underline;
+}
+
 #download-button {
   padding: 5px 10px;
   position: absolute;
@@ -419,6 +423,26 @@ p {
 .ejeep-container:hover .jeep-deactivate-button,
 .ejeep-container:hover .jeep-delete-button {
   transform: translateX(0);
+}
+
+.jeep-deactivate-button:hover:after {
+  content: "Disable";
+  position: absolute;
+  transform: translateX(-55%) translateY(-140%);
+  width: 100%;
+  font-size: 0.7rem;
+  color: white;
+  background-color: rgba(24, 20, 20, 0.7);
+}
+
+.jeep-delete-button:hover::after {
+  content: "Delete";
+  position: absolute;
+  transform: translateX(-50%) translateY(-140%);
+  width: 100%;
+  font-size: 0.7rem;
+  color: white;
+  background-color: rgba(24, 20, 20, 0.7);
 }
 
 .ejeep-number {
@@ -656,6 +680,10 @@ p {
   transition: 0.3s ease;
   overflow: hidden;
   text-align: start;
+}
+
+.notification-container p {
+  text-decoration: underline;
 }
 
 .notification-container.reveal {
