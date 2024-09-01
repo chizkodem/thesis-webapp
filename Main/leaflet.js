@@ -507,7 +507,7 @@ function initializeMap() {
     clearPreviousContacts();
     const ContactsCon = document.querySelector(".contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    const radius = 3000;
+    const radius = 3000; // 3km radius
     const mapboxToken =
       "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
 
@@ -520,32 +520,41 @@ function initializeMap() {
         markersLayer.clearLayers();
 
         if (data.features && data.features.length > 0) {
-          data.features.forEach((hospital, index) => {
-            const [lon, lat] = hospital.geometry.coordinates;
+          data.features.forEach((hospital) => {
+            const [hospitalLon, hospitalLat] = hospital.geometry.coordinates;
 
-            // Creating a marker with the hospital icon
-            const marker = L.marker([lat, lon], {
-              icon: L.icon({
-                iconUrl: "img/hospital.png", // Path to your hospital icon
-                iconSize: [32, 32], // Size of the icon
-                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
-              }),
-            }).bindPopup(
-              `<b>${hospital.text}</b><br>${
-                hospital.place_name
-              }<br>${hospitalContactNumber(hospital.text)}`
-            ); // Add popup with hospital name and address
+            const distance = getDistanceFromLatLonInMeters(
+              lat,
+              lon,
+              hospitalLat,
+              hospitalLon
+            );
 
-            marker.addTo(markersLayer); // Add marker to the layer group
-            contactsInfo = document.createElement("li");
-            contactsInfo.className = "contacts-info";
-            contactsInfo.id = `contacts-${deviceId}`;
-            contactsInfo.innerHTML = `
-            <h3 href="#">${hospital.text}</h3>
-            <p>${hospitalContactNumber(hospital.text)}</p>
-            `;
-            ContactsCon.appendChild(contactsInfo);
+            if (distance <= radius) {
+              // Creating a marker with the hospital icon
+              const marker = L.marker([hospitalLat, hospitalLon], {
+                icon: L.icon({
+                  iconUrl: "img/hospital.png", // Path to your hospital icon
+                  iconSize: [32, 32], // Size of the icon
+                  iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+                  popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+                }),
+              }).bindPopup(
+                `<b>${hospital.text}</b><br>${
+                  hospital.place_name
+                }<br>${hospitalContactNumber(hospital.text)}`
+              ); // Add popup with hospital name and address
+
+              marker.addTo(markersLayer); // Add marker to the layer group
+              contactsInfo = document.createElement("li");
+              contactsInfo.className = "contacts-info";
+              contactsInfo.id = `contacts-${deviceId}`;
+              contactsInfo.innerHTML = `
+              <h3 href="#">${hospital.text}</h3>
+              <p>${hospitalContactNumber(hospital.text)}</p>
+              `;
+              ContactsCon.appendChild(contactsInfo);
+            }
           });
         } else {
           console.log("No hospitals found nearby.");
@@ -562,16 +571,12 @@ function initializeMap() {
           const locName = childSnapshot.key;
           const data = childSnapshot.val();
 
-          console.log(data, "test Data");
-
           const distance = getDistanceFromLatLonInMeters(
             lat,
             lon,
             data.latitude,
             data.longitude
           );
-
-          // console.log(locName);
 
           if (distance <= radius) {
             const marker = L.marker([data.latitude, data.longitude], {
@@ -584,7 +589,9 @@ function initializeMap() {
             }).bindPopup(
               `<b>${locName}</b><br>Custom Location (${(
                 distance / 1000
-              ).toFixed(2)} km away)<br>${data.contactNo}`
+              ).toFixed(2)} km away)<br>${
+                data.contactNo ? data.contactNo : randomContactNumber()
+              }`
             );
 
             marker.addTo(markersLayer);
@@ -593,7 +600,7 @@ function initializeMap() {
             contactsInfo.id = `contacts-${deviceId}`;
             contactsInfo.innerHTML = `
             <h3 href="#">${locName}</h3>
-            <p>${data.contactNo}</p>
+            <p>${data.contactNo ? data.contactNo : randomContactNumber()}</p>
             `;
             ContactsCon.appendChild(contactsInfo);
           }
@@ -624,7 +631,7 @@ function initializeMap() {
   window.nearestPoliceStation = function (deviceId, lat, lon) {
     const policeContactsCon = document.querySelector(".police-contacts-list");
     let contactsInfo = document.getElementById(`.contacts-${deviceId}`);
-    const radius = 3000;
+    const radius = 3000; // 3km radius
     const mapboxToken =
       "pk.eyJ1Ijoiam96ZXBocGVyZXoiLCJhIjoiY20wMHBpbGNuMXhkMzJxczhmcHlpZXc2ZyJ9.JJwWHmr_HnB_aRMsLrg-6w";
 
@@ -634,34 +641,44 @@ function initializeMap() {
       .then((response) => response.json())
       .then(async (data) => {
         // Clear existing markers
+        markersLayer.clearLayers();
 
         if (data.features && data.features.length > 0) {
-          data.features.forEach((policeStation, index) => {
-            const [lon, lat] = policeStation.geometry.coordinates;
+          data.features.forEach((policeStation) => {
+            const [stationLon, stationLat] = policeStation.geometry.coordinates;
 
-            // Creating a marker with the police station icon
-            const marker = L.marker([lat, lon], {
-              icon: L.icon({
-                iconUrl: "img/police.png", // Path to your police station icon
-                iconSize: [32, 32], // Size of the icon
-                iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-                popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
-              }),
-            }).bindPopup(
-              `<b>${policeStation.text}</b><br>${
-                policeStation.place_name
-              }<br>${policeContactNumber(policeStation.text)}`
-            ); // Add popup with police station name and address
+            const distance = getDistanceFromLatLonInMeters(
+              lat,
+              lon,
+              stationLat,
+              stationLon
+            );
 
-            marker.addTo(markersLayer); // Add marker to the layer group
-            contactsInfo = document.createElement("li");
-            contactsInfo.className = "contacts-info";
-            contactsInfo.id = `contacts-${deviceId}`;
-            contactsInfo.innerHTML = `
-            <h3 href="#">${policeStation.text}</h3>
-            <p>${policeContactNumber(policeStation.text)}</p>
-            `;
-            policeContactsCon.appendChild(contactsInfo);
+            if (distance <= radius) {
+              // Creating a marker with the police station icon
+              const marker = L.marker([stationLat, stationLon], {
+                icon: L.icon({
+                  iconUrl: "img/police.png", // Path to your police station icon
+                  iconSize: [32, 32], // Size of the icon
+                  iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+                  popupAnchor: [0, -32], // Point from which the popup should open relative to the iconAnchor
+                }),
+              }).bindPopup(
+                `<b>${policeStation.text}</b><br>${
+                  policeStation.place_name
+                }<br>${policeContactNumber(policeStation.text)}`
+              ); // Add popup with police station name and address
+
+              marker.addTo(markersLayer); // Add marker to the layer group
+              contactsInfo = document.createElement("li");
+              contactsInfo.className = "contacts-info";
+              contactsInfo.id = `contacts-${deviceId}`;
+              contactsInfo.innerHTML = `
+              <h3 href="#">${policeStation.text}</h3>
+              <p>${policeContactNumber(policeStation.text)}</p>
+              `;
+              policeContactsCon.appendChild(contactsInfo);
+            }
           });
         } else {
           console.log("No police stations found nearby.");
@@ -685,12 +702,10 @@ function initializeMap() {
             data.longitude
           );
 
-          // console.log(locName);
-
           if (distance <= radius) {
             const marker = L.marker([data.latitude, data.longitude], {
               icon: L.icon({
-                iconUrl: "img/police.png", // Path to your hospital icon
+                iconUrl: "img/police.png", // Path to your police station icon
                 iconSize: [32, 32],
                 iconAnchor: [16, 32],
                 popupAnchor: [0, -32],
