@@ -284,15 +284,21 @@ document.addEventListener("click", function (event) {
 });
 
 document.addEventListener("click", function (event) {
-  if (event.target.classList.contains("warning-cancel-button")) {
+  if (
+    event.target.classList.contains("warning-cancel-button") ||
+    event.target.classList.contains("delete-warning")
+  ) {
     const warnDelBtn = event.target;
     const warnCon = document.querySelector(".delete-warning");
     const userInfo = document.querySelector(".user-info.selected");
     const buttonsCon = document.querySelector(".crud-buttons-container.reveal");
+    console.log("cancel test");
 
-    userInfo.classList.remove("selected");
-    buttonsCon.classList.remove("reveal");
-    warnDelBtn.classList.remove("reveal");
+    if (userInfo) {
+      userInfo.classList.remove("selected");
+      buttonsCon.classList.remove("reveal");
+      warnDelBtn.classList.remove("reveal");
+    }
     warnCon.classList.remove("reveal");
   }
 });
